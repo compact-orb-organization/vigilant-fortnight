@@ -32,7 +32,9 @@ eselect profile set 26
 
 # Load S3 credentials and download Packages to binpkgs
 source /etc/portage/s3.sh
-rclone --config /etc/portage/rclone.conf --s3-access-key-id $s3_access_key_id --s3-endpoint $s3_endpoint --s3-secret-access-key $s3_secret_access_key copy 1:$s3_bucket/Packages /var/cache/binpkgs/
+if [[ ! " $* " =~ " --new-packages " ]]; then
+    rclone --config /etc/portage/rclone.conf --s3-access-key-id $s3_access_key_id --s3-endpoint $s3_endpoint --s3-secret-access-key $s3_secret_access_key copy 1:$s3_bucket/Packages /var/cache/binpkgs/
+fi
 
 # Re-emerge all previously installed packages
 emerge @installed
