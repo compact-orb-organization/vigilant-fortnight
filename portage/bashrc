@@ -8,7 +8,7 @@ post_pkg_postinst() {
   directory_basename=$(basename $directory)
 
   # Upload the binary packages directory to the remote S3 bucket
-  rclone --config /etc/portage/rclone.conf --s3-access-key-id $s3_access_key_id --s3-endpoint $s3_endpoint --s3-secret-access-key $s3_secret_access_key copy $directory 1:$s3_bucket:$directory_basename
+  rclone --config /etc/portage/rclone.conf --s3-access-key-id $s3_access_key_id --s3-endpoint $s3_endpoint --s3-secret-access-key $s3_secret_access_key copyto $directory 1:$s3_bucket:$directory_basename
 
   # Upload the Packages file to the remote S3 bucket
   rclone --config /etc/portage/rclone.conf --s3-access-key-id $s3_access_key_id --s3-endpoint $s3_endpoint --s3-secret-access-key $s3_secret_access_key copy /var/cache/binpkgs/Packages 1:$s3_bucket
