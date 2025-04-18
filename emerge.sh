@@ -17,6 +17,7 @@ echo s3_bucket=$S3_BUCKET >> /etc/portage/s3.sh
 if [[ ! " $* " =~ " --no-binpkg " ]]; then
     rm /etc/portage/binrepos.conf/gentoobinhost.conf
     sed --in-place "s|\$S3_BUCKET|${S3_BUCKET}|g" /etc/portage/binrepos.conf/vigilant-fortnight.conf
+    cat /etc/portage/binrepos.conf/vigilant-fortnight.conf
 else
     sed --in-place "s/ getbinpkg//g" /etc/portage/make.conf
 fi
