@@ -22,6 +22,10 @@ else
     sed --in-place "s/ getbinpkg//g" /etc/portage/make.conf
 fi
 
+ls -la /etc/portage/binrepos.conf
+
+cat /etc/portage/binrepos.conf/*
+
 # Download and install rclone for interacting with S3 storage
 wget --directory-prefix=/tmp https://downloads.rclone.org/v1.69.1/rclone-v1.69.1-linux-amd64.zip
 unzip /tmp/rclone-v1.69.1-linux-amd64.zip rclone-v1.69.1-linux-amd64/rclone -d /tmp
