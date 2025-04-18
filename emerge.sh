@@ -16,9 +16,9 @@ echo s3_bucket=$S3_BUCKET >> /etc/portage/s3.sh
 # Create the binrepos.conf file for Portage
 if [[ ! " $* " =~ " --no-binpkg " ]]; then
     rm /etc/portage/binrepos.conf/gentoobinhost.conf
-    echo $BINREPOS_CONF | base64 --decode > /etc/portage/binrepos.conf/vigilant-fortnight.conf
+    sed --in-place "s|\$S3_BUCKET|${S3_BUCKET}|g" /etc/portage/binrepos.conf/vigilant-fortnight.conf
 else
-    sed --in-place 's/ getbinpkg//g' /etc/portage/make.conf
+    sed --in-place "s/ getbinpkg//g" /etc/portage/make.conf
 fi
 
 # Download and install rclone for interacting with S3 storage
