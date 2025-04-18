@@ -16,15 +16,13 @@ echo s3_bucket=$S3_BUCKET >> /etc/portage/s3.sh
 # Create the binrepos.conf file for Portage
 if [[ ! " $* " =~ " --no-binpkg " ]]; then
     rm /etc/portage/binrepos.conf/gentoobinhost.conf
-    sed --in-place "s|\$S3_BUCKET|${S3_BUCKET}|g" /etc/portage/binrepos.conf/vigilant-fortnight.conf
-    cat /etc/portage/binrepos.conf/vigilant-fortnight.conf
+    sed -i "s|\$S3_BUCKET|${S3_BUCKET}|g" /etc/portage/binrepos.conf/vigilant-fortnight.conf
 else
-    sed --in-place "s/ getbinpkg//g" /etc/portage/make.conf
+    sed --in-place 's/ getbinpkg//g' /etc/portage/make.conf
 fi
 
 ls -la /etc/portage/binrepos.conf
-
-cat /etc/portage/binrepos.conf/*
+head -n 2 /etc/portage/binrepos.conf/vigilant-fortnight.conf
 
 # Download and install rclone for interacting with S3 storage
 wget --directory-prefix=/tmp https://downloads.rclone.org/v1.69.1/rclone-v1.69.1-linux-amd64.zip
@@ -38,7 +36,7 @@ emerge-webrsync
 # Select the desired profile
 eselect profile set 26
 
-# Load S3 credentials and download Packages to binpkgs
+# Load S3 credentials and download Packages to binpkg
 
 # Re-emerge all previously installed packages
 emerge @installed
