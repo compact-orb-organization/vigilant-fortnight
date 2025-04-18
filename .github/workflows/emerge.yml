@@ -5,4 +5,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker container run --env S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }} --env S3_ENDPOINT=${{ secrets.S3_ENDPOINT }} --env S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }} --env S3_BUCKET=${{ secrets.S3_BUCKET }} --interactive --privileged --rm --tty --volume ./:/root/workspace --volume /tmp:/tmp gentoo/stage3:amd64-desktop-systemd
+      - run: docker container run --env S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }} --env S3_ENDPOINT=${{ secrets.S3_ENDPOINT }} --env S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }} --env S3_BUCKET=${{ secrets.S3_BUCKET }} --privileged --rm --volume ./:/root/workspace --volume /tmp:/tmp gentoo/stage3:amd64-desktop-systemd bash /root/workspace/.github/workflows/emerge.sh
