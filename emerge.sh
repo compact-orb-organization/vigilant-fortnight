@@ -15,7 +15,8 @@ echo s3_bucket=$S3_BUCKET >> /etc/portage/s3.sh
 
 # Create the binrepos.conf file for Portage
 if [[ ! " $* " =~ " --no-binpkg " ]]; then
-    echo $BINREPOS_CONF | base64 --decode > /etc/portage/binrepos.conf
+    rm /etc/portage/binrepos.conf/gentoobinhost.conf
+    echo $BINREPOS_CONF | base64 --decode > /etc/portage/binrepos.conf/vigilant-fortnight.conf
 else
     sed --in-place 's/ getbinpkg//g' /etc/portage/make.conf
 fi
