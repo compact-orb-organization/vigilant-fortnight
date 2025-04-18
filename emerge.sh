@@ -16,6 +16,8 @@ echo s3_bucket=$S3_BUCKET >> /etc/portage/s3.sh
 # Create the binrepos.conf file for Portage
 if [[ ! " $* " =~ " --no-binpkg " ]]; then
     echo $BINREPOS_CONF | base64 --decode > /etc/portage/binrepos.conf
+else
+    sed --in-place 's/ getbinpkg//g' /etc/portage/make.conf
 fi
 
 # Download and install rclone for interacting with S3 storage
