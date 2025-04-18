@@ -13,6 +13,11 @@ echo s3_endpoint=$S3_ENDPOINT >> /etc/portage/s3.sh
 echo s3_secret_access_key=$S3_SECRET_ACCESS_KEY >> /etc/portage/s3.sh
 echo s3_bucket=$S3_BUCKET >> /etc/portage/s3.sh
 
+# Create the binrepos.conf file for Portage
+if [[ ! " $* " =~ " --no-binpkg " ]]; then
+    echo $BINREPOS_CONF | base64 --decode > /etc/portage/binrepos.conf
+fi
+
 # Download and install rclone for interacting with S3 storage
 wget --directory-prefix=/tmp https://downloads.rclone.org/v1.69.1/rclone-v1.69.1-linux-amd64.zip
 unzip /tmp/rclone-v1.69.1-linux-amd64.zip rclone-v1.69.1-linux-amd64/rclone -d /tmp
