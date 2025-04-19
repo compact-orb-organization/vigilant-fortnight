@@ -36,7 +36,7 @@ rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --
 mkdir /tmp/upperdir /tmp/workdir
 mount --types overlay overlay --options lowerdir=/mnt/binpkgs,upperdir=/tmp/upperdir,workdir=/tmp/workdir /var/cache/binpkgs
 
-# Re-emerge all previously installed packages
+# Re-emerge all previously installed packages and timeout if it takes too long
 timeout 10m emerge @installed
 
 # Upload any newly built binary packages back to the S3 bucket
