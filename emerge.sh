@@ -28,8 +28,16 @@ rm --recursive /tmp/rclone-v1.69.1-linux-amd64*
 # Install fuse (needed for rclone mount) and then mount the remote binpkg cache
 FEATURES="-buildpkg -getbinpkg" emerge sys-fs/fuse
 
-# Mount S3 bucket to /var/cache/binpkgs using rclone
-rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY mount 1:$S3_BUCKET /var/cache/binpkgs --allow-other --daemon --vfs-cache-mode full
+# Mount the S3 bucket via rclone as the primary binpkg cache (runs in background)
+mkdir /mnt/binpkgs
+rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY mount 1:$S3_BUCKET /mnt/binpkgs --allow-other --daemon --vfs-cache-mode full
+
+# Overlay the remote cache with local changes so /var/cache/binpkgs shows both
+mkdir /tmp/upperdir /tmp/workdir
+mount --types overlay overlay --options lowerdir=/mnt/binpkgs,upperdir=/tmp/upperdir,workdir=/tmp/workdir /var/cache/binpkgs
 
 # Re-emerge all previously installed packages
 emerge @installed
+
+# Upload any newly built binary packages back to the S3 bucket
+rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY copy /tmp/upperdir 1:$S3_BUCKET
