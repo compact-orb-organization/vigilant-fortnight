@@ -34,7 +34,7 @@ FEATURES="-buildpkg -getbinpkg" emerge sys-fs/fuse:0
 
 # Mount S3 bucket as Portage binary package cache
 mkdir /tmp/s3
-mount-s3 --cache /tmp/s3/ --endpoint-url https://$S3_ENDPOINT/ $S3_BUCKET /var/cache/binpkgs/
+mount-s3 --cache /tmp/s3/ --endpoint-url  https://$S3_ENDPOINT/ --region bhs $S3_BUCKET /var/cache/binpkgs/
 
 # Re-emerge all previously installed packages and timeout if it takes too long
 emerge @installed
