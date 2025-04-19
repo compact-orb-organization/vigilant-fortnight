@@ -30,7 +30,7 @@ FEATURES="-buildpkg -getbinpkg" emerge sys-fs/fuse
 
 # Mount the S3 bucket via rclone as the primary binpkg cache (runs in background)
 mkdir /mnt/binpkgs
-rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY mount 1:$S3_BUCKET /mnt/binpkgs --allow-other --daemon --no-checksum --no-modtime --no-seek --read-only --vfs-cache-mode full --vfs-read-chunk-size 4M --vfs-read-chunk-streams 16
+rclone --s3-access-key-id $S3_ACCESS_KEY_ID --s3-acl public-read --s3-endpoint $S3_ENDPOINT --s3-provider Other --s3-secret-access-key $S3_SECRET_ACCESS_KEY mount :s3:$S3_BUCKET /mnt/binpkgs --allow-other --daemon --no-checksum --no-modtime --no-seek --read-only --vfs-cache-mode full --vfs-read-chunk-size 4M --vfs-read-chunk-streams 16
 
 # Overlay the remote cache with local changes so /var/cache/binpkgs shows both
 mkdir /tmp/upperdir /tmp/workdir
@@ -40,4 +40,4 @@ mount --types overlay overlay --options lowerdir=/mnt/binpkgs,upperdir=/tmp/uppe
 timeout 19800 emerge @installed
 
 # Upload the binary packages directory to the remote S3 bucket
-rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY copy /tmp/upperdir 1:$S3_BUCKET
+rclone --s3-access-key-id $S3_ACCESS_KEY_ID --s3-acl public-read --s3-endpoint $S3_ENDPOINT --s3-provider Other --s3-secret-access-key $S3_SECRET_ACCESS_KEY copy /tmp/upperdir :s3:$S3_BUCKET
