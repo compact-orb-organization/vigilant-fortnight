@@ -29,7 +29,7 @@ rm --recursive /tmp/rclone-v1.69.1-linux-amd64*
 FEATURES="-buildpkg -getbinpkg" emerge sys-fs/fuse
 
 # Mount S3 bucket to /var/cache/binpkgs using rclone
-rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY mount 1:$S3_BUCKET /var/cache/binpkgs --allow-other --daemon
+rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY mount 1:$S3_BUCKET /var/cache/binpkgs --allow-other --daemon --vfs-cache-mode full
 
 # Re-emerge all previously installed packages
 emerge @installed
