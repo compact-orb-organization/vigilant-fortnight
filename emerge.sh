@@ -14,16 +14,10 @@ eselect profile set 26
 # Deploy all Portage configuration files from the workspace
 cp --recursive /root/workspace/portage/* /etc/portage/
 
-# Configure binary package handling
-if [[ ! " $* " =~ " --no-binpkg " ]]; then
-    # Remove default Gentoo binhost to use custom S3 bucket
-    rm /etc/portage/binrepos.conf/gentoobinhost.conf
-    # Substitute actual bucket name into custom binrepos config
-    sed --in-place "s|\$S3_BUCKET|${S3_BUCKET}|g" /etc/portage/binrepos.conf/vigilant-fortnight.conf
-else
-    # Disable binary package builds by removing getbinpkg from make.conf
-    sed --in-place "s/ getbinpkg//g" /etc/portage/make.conf
-fi
+# Remove default Gentoo binhost to use custom S3 bucket
+rm /etc/portage/binrepos.conf/gentoobinhost.conf
+# Substitute actual bucket name into custom binrepos config
+sed --in-place "s|\$S3_BUCKET|${S3_BUCKET}|g" /etc/portage/binrepos.conf/vigilant-fortnight.conf
 
 # Download and install rclone for interacting with S3 storage
 wget --directory-prefix=/tmp https://downloads.rclone.org/v1.69.1/rclone-v1.69.1-linux-amd64.zip
