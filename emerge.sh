@@ -14,6 +14,12 @@ eselect profile set 26
 # Deploy all Portage configuration files from the workspace
 cp --recursive /root/workspace/portage/* /etc/portage/
 
+# Persist S3 credentials into a script for later use by rclone
+echo s3_access_key_id=$S3_ACCESS_KEY_ID >> /etc/portage/s3.sh
+echo s3_endpoint=$S3_ENDPOINT >> /etc/portage/s3.sh
+echo s3_secret_access_key=$S3_SECRET_ACCESS_KEY >> /etc/portage/s3.sh
+echo s3_bucket=$S3_BUCKET >> /etc/portage/s3.sh
+
 # Remove default Gentoo binhost to use custom S3 bucket
 rm /etc/portage/binrepos.conf/gentoobinhost.conf
 # Substitute actual bucket name into custom binrepos config
@@ -30,7 +36,7 @@ FEATURES="-buildpkg -getbinpkg" emerge sys-fs/fuse
 
 # Mount the S3 bucket via rclone as the primary binpkg cache (runs in background)
 mkdir /mnt/binpkgs
-rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY mount 1:$S3_BUCKET /mnt/binpkgs --allow-other --daemon
+rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY mount 1:$S3_BUCKET /mnt/binpkgs --allow-other --daemon --read-only
 
 # Overlay the remote cache with local changes so /var/cache/binpkgs shows both
 mkdir /tmp/upperdir /tmp/workdir
@@ -38,6 +44,3 @@ mount --types overlay overlay --options lowerdir=/mnt/binpkgs,upperdir=/tmp/uppe
 
 # Re-emerge all previously installed packages and timeout if it takes too long
 timeout 19800 emerge @installed
-
-# Upload any newly built binary packages back to the S3 bucket
-rclone --config /etc/portage/rclone.conf --s3-access-key-id $S3_ACCESS_KEY_ID --s3-endpoint $S3_ENDPOINT --s3-secret-access-key $S3_SECRET_ACCESS_KEY copy /tmp/upperdir 1:$S3_BUCKET
