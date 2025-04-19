@@ -11,33 +11,30 @@ emerge-webrsync
 # Select the desired profile
 eselect profile set 26
 
-# Deploy all Portage configuration files from the workspace
+# Deploy Portage configuration files
 cp --recursive /root/workspace/portage/* /etc/portage/
 
-# Remove default Gentoo binhost to use custom S3 bucket
+# Remove default Gentoo binhost
 rm /etc/portage/binrepos.conf/gentoobinhost.conf
-# Substitute actual bucket name into custom binrepos config
-sed --in-place "s|\$S3_BUCKET|${S3_BUCKET}|g" /etc/portage/binrepos.conf/vigilant-fortnight.conf
 
-# Download and install rclone for interacting with S3 storage
-wget --directory-prefix=/tmp https://downloads.rclone.org/v1.69.1/rclone-v1.69.1-linux-amd64.zip
-unzip /tmp/rclone-v1.69.1-linux-amd64.zip rclone-v1.69.1-linux-amd64/rclone -d /tmp
-mv /tmp/rclone-v1.69.1-linux-amd64/rclone /usr/local/bin
-rm --recursive /tmp/rclone-v1.69.1-linux-amd64*
+# Copy and configure AWS credentials
+cp --recursive /root/workspace/.aws/* /root/.aws/
+sed --in-place "s/aws_access_key_id = /aws_access_key_id = $S3_ACCESS_KEY_ID/" /root/.aws/credentials
+sed --in-place "s/aws_secret_access_key = /aws_secret_access_key = $S3_SECRET_ACCESS_KEY/" /root/.aws/credentials
 
-# Install fuse (needed for rclone mount) and then mount the remote binpkg cache
-FEATURES="-buildpkg -getbinpkg" emerge sys-fs/fuse
+# Download and install mountpoint-s3 binary
+wget --directory-prefix=/tmp/ https://s3.amazonaws.com/mountpoint-s3-release/latest/x86_64/mount-s3.tar.gz
+mkdir --parents /opt/aws/mountpoint-s3
+tar --extract --directory=/opt/aws/mountpoint-s3/ --file=/tmp/mount-s3.tar.gz
+rm /tmp/mount-s3.tar.gz
+ln --symbolic /opt/aws/mountpoint-s3/bin/mount-s3 /usr/local/bin/mount-s3
 
-# Mount the S3 bucket via rclone as the primary binpkg cache (runs in background)
-mkdir /mnt/binpkgs
-rclone --s3-access-key-id $S3_ACCESS_KEY_ID --s3-acl public-read --s3-endpoint $S3_ENDPOINT --s3-provider Other --s3-secret-access-key $S3_SECRET_ACCESS_KEY mount :s3:$S3_BUCKET /mnt/binpkgs --allow-other --daemon --no-checksum --no-modtime --no-seek --read-only --vfs-cache-mode full --vfs-read-chunk-size 4M --vfs-read-chunk-streams 16
+# Install fuse 2
+FEATURES="-buildpkg -getbinpkg" emerge sys-fs/fuse:0
 
-# Overlay the remote cache with local changes so /var/cache/binpkgs shows both
-mkdir /tmp/upperdir /tmp/workdir
-mount --types overlay overlay --options lowerdir=/mnt/binpkgs,upperdir=/tmp/upperdir,workdir=/tmp/workdir /var/cache/binpkgs
+# Mount S3 bucket as Portage binary package cache
+mkdir /tmp/s3
+mount-s3 --cache /tmp/s3/ --endpoint-url $S3_ENDPOINT $S3_BUCKET /var/cache/binpkgs/
 
 # Re-emerge all previously installed packages and timeout if it takes too long
-timeout 19800 emerge @installed
-
-# Upload the binary packages directory to the remote S3 bucket
-rclone --s3-access-key-id $S3_ACCESS_KEY_ID --s3-acl public-read --s3-endpoint $S3_ENDPOINT --s3-provider Other --s3-secret-access-key $S3_SECRET_ACCESS_KEY copy /tmp/upperdir :s3:$S3_BUCKET
+emerge @installed
