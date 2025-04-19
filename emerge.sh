@@ -12,13 +12,13 @@ emerge-webrsync
 eselect profile set 26
 
 # Deploy Portage configuration files
-cp --recursive /root/workspace/portage/* /etc/portage/
+cp --recursive /root/workspace/portage/ /etc/
 
 # Remove default Gentoo binhost
 rm /etc/portage/binrepos.conf/gentoobinhost.conf
 
 # Copy and configure AWS credentials
-cp --recursive /root/workspace/.aws/* /root/.aws/
+cp --recursive /root/workspace/.aws/ /root/
 sed --in-place "s/aws_access_key_id = /aws_access_key_id = $S3_ACCESS_KEY_ID/" /root/.aws/credentials
 sed --in-place "s/aws_secret_access_key = /aws_secret_access_key = $S3_SECRET_ACCESS_KEY/" /root/.aws/credentials
 
