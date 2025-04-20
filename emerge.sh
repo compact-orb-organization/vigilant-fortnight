@@ -50,7 +50,7 @@ mkdir /tmp/upperdir /tmp/workdir
 mount --types overlay overlay --options lowerdir=/tmp/s3/,upperdir=/tmp/upperdir/,workdir=/tmp/workdir/ /var/cache/binpkgs/
 
 # Re-emerge all previously installed packages and timeout if it takes too long
-timeout 19800 emerge @installed
+timeout 19800 emerge $1
 
 # Copy the local changes to the remote cache
 aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET --acl public-read --recursive
