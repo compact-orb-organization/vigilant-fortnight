@@ -53,4 +53,4 @@ mount --types overlay overlay --options lowerdir=/tmp/s3/,upperdir=/tmp/upperdir
 timeout 19800 emerge @installed
 
 # Copy the local changes to the remote cache
-aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET --recursive
+aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET --acl public-read --recursive
