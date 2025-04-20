@@ -1,3 +1,7 @@
+# Initialize error flag and trap any command failure to set it
+error=false
+trap 'error=true' ERR
+
 # Copy custom locale definitions into /etc and rebuild the locale database
 cp /root/workspace/locale.gen /etc/
 locale-gen
@@ -54,3 +58,8 @@ timeout 19800 emerge $1
 
 # Copy the local changes to the remote cache
 aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET --acl public-read --recursive
+
+# Exit script with status 1 if any previous command failed
+if $error; then
+    exit 1
+fi
