@@ -46,8 +46,8 @@ ln --symbolic /opt/aws/mountpoint-s3/bin/mount-s3 /usr/local/bin/mount-s3
 FEATURES="-buildpkg -getbinpkg" emerge sys-fs/fuse:0
 
 # Mount S3 bucket as Portage binary package cache
-mkdir /tmp/s3 /tmp/s3-cache
-mount-s3 --cache /tmp/s3-cache/ --endpoint-url https://$S3_ENDPOINT --region $S3_REGION $S3_BUCKET /tmp/s3/
+mkdir /tmp/mountpoint
+mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --region $S3_REGION $S3_BUCKET /tmp/mountpoint/
 
 # Overlay the remote cache with local changes
 mkdir /tmp/upperdir /tmp/workdir
