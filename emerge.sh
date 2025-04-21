@@ -51,7 +51,7 @@ mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --region $S3_REGION $
 
 # Overlay the remote cache with local changes
 mkdir /tmp/upperdir /tmp/workdir
-mount --types overlay overlay --options lowerdir=/tmp/s3/,upperdir=/tmp/upperdir/,workdir=/tmp/workdir/ /var/cache/binpkgs/
+mount --types overlay overlay --options lowerdir=/tmp/mountpoint/,upperdir=/tmp/upperdir/,workdir=/tmp/workdir/ /var/cache/binpkgs/
 
 # Re-emerge all previously installed packages and timeout if it takes too long
 timeout 19800 emerge $1
