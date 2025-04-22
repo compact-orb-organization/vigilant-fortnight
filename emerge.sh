@@ -46,7 +46,7 @@ rm /tmp/mount-s3.tar.gz
 ln --symbolic /opt/aws/mountpoint-s3/bin/mount-s3 /usr/local/bin/mount-s3
 
 # Install fuse 2
-emerge sys-fs/fuse:0
+FEATURES="-buildpkg" emerge sys-fs/fuse:0
 
 # Mount S3 bucket as Portage binary package cache
 mkdir /tmp/mountpoint
