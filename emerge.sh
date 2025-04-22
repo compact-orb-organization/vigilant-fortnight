@@ -15,9 +15,6 @@ emerge-webrsync --quiet
 # Select the desired profile
 eselect --brief profile set 26
 
-# Sync GURU repository
-emerge --sync guru
-
 # Deploy Portage configuration files
 cp --recursive /root/workspace/portage/ /etc/
 
@@ -55,6 +52,12 @@ mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --region $S3_REGION $
 # Overlay the remote cache with local changes
 mkdir /tmp/upperdir /tmp/workdir
 mount --types overlay overlay --options lowerdir=/tmp/mountpoint/,upperdir=/tmp/upperdir/,workdir=/tmp/workdir/ /var/cache/binpkgs/
+
+# Install git
+emerge dev-vcs/git
+
+# Sync GURU repository
+emerge --sync guru
 
 # Re-emerge all previously installed packages and timeout if it takes too long
 timeout 19800 emerge $1
