@@ -4,16 +4,16 @@ trap 'error=true' ERR
 
 # Copy custom locale definitions into /etc and rebuild the locale database
 cp /root/workspace/locale.gen /etc/
-locale-gen
+locale-gen --quiet
 
 # Select the desired locale entry
-eselect locale set 6
+eselect --brief locale set 6
 
 # Refresh the Portage tree from Gentoo mirrors
-emerge-webrsync
+emerge-webrsync --quiet
 
 # Select the desired profile
-eselect profile set 26
+eselect --brief profile set 26
 
 # Deploy Portage configuration files
 cp --recursive /root/workspace/portage/ /etc/
@@ -29,21 +29,21 @@ sed --in-place "s/region = /region = $S3_REGION/" /root/.aws/config
 sed --in-place "s/endpoint_url = /endpoint_url = https:\/\/$S3_ENDPOINT/" /root/.aws/config
 
 # Download and install AWS CLI
-wget --directory-prefix=/tmp/ https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip
-unzip /tmp/awscli-exe-linux-x86_64-2.22.35.zip -d /tmp/
+wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip
+unzip -q /tmp/awscli-exe-linux-x86_64-2.22.35.zip -d /tmp/
 rm /tmp/awscli-exe-linux-x86_64-2.22.35.zip
 /tmp/aws/install
 rm --recursive /tmp/aws/
 
 # Download and install mountpoint-s3 binary
-wget --directory-prefix=/tmp/ https://s3.amazonaws.com/mountpoint-s3-release/latest/x86_64/mount-s3.tar.gz
+wget --directory-prefix=/tmp/ --no-verbose https://s3.amazonaws.com/mountpoint-s3-release/latest/x86_64/mount-s3.tar.gz
 mkdir --parents /opt/aws/mountpoint-s3
 tar --extract --directory=/opt/aws/mountpoint-s3/ --file=/tmp/mount-s3.tar.gz
 rm /tmp/mount-s3.tar.gz
 ln --symbolic /opt/aws/mountpoint-s3/bin/mount-s3 /usr/local/bin/mount-s3
 
 # Install fuse 2
-FEATURES="-buildpkg -getbinpkg" emerge sys-fs/fuse:0
+emerge sys-fs/fuse:0
 
 # Mount S3 bucket as Portage binary package cache
 mkdir /tmp/mountpoint
@@ -57,7 +57,7 @@ mount --types overlay overlay --options lowerdir=/tmp/mountpoint/,upperdir=/tmp/
 timeout 19800 emerge $1
 
 # Copy the local changes to the remote cache
-aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET --acl public-read --recursive
+aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET --acl public-read --no-progress --recursive
 
 # Exit script with status 1 if any previous command failed
 if $error; then
