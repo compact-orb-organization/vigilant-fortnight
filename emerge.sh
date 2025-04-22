@@ -15,6 +15,9 @@ emerge-webrsync --quiet
 # Select the desired profile
 eselect --brief profile set 26
 
+# Sync GURU repository
+emerge --sync guru
+
 # Deploy Portage configuration files
 cp --recursive /root/workspace/portage/ /etc/
 
