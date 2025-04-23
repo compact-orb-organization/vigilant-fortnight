@@ -45,7 +45,7 @@ FEATURES="-buildpkg" emerge sys-fs/fuse:0
 
 # Mount S3 bucket as Portage binary package cache
 mkdir /tmp/mountpoint
-mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --region $S3_REGION $S3_BUCKET /tmp/mountpoint/
+mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --profile $S3_BUCKET --region $S3_REGION $S3_BUCKET /tmp/mountpoint/
 
 # Overlay the remote cache with local changes
 mkdir /tmp/upperdir /tmp/workdir
