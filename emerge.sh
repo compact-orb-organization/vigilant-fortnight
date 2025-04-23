@@ -12,9 +12,6 @@ eselect --brief locale set 6
 # Refresh the Portage tree from Gentoo mirrors
 emerge-webrsync --quiet
 
-# Select the desired profile
-eselect --brief profile set 26
-
 # Deploy Portage configuration files
 cp --recursive /root/workspace/portage/ /etc/
 
