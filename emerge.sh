@@ -45,7 +45,7 @@ FEATURES="-buildpkg" emerge sys-fs/fuse:0
 
 # Mount S3 bucket as Portage binary package cache
 mkdir /tmp/mountpoint
-mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --prefix goldmont-plus/ --profile $S3_BUCKET --region $S3_REGION $S3_BUCKET /tmp/mountpoint/
+mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --prefix main/ --profile $S3_BUCKET --region $S3_REGION $S3_BUCKET /tmp/mountpoint/
 
 # Overlay the remote cache with local changes
 mkdir /tmp/upperdir /tmp/workdir
@@ -61,7 +61,7 @@ emerge --sync guru
 timeout 19800 emerge $1
 
 # Copy the local changes to the remote cache
-aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET/goldmont-plus/ --endpoint-url https://$S3_ENDPOINT --no-progress --profile $S3_BUCKET --recursive --region $S3_REGION
+aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET/main/ --endpoint-url https://$S3_ENDPOINT --no-progress --profile $S3_BUCKET --recursive --region $S3_REGION
 
 # Exit script with status 1 if any previous command failed
 if $error; then
