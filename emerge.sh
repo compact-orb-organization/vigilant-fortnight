@@ -22,11 +22,9 @@ cp --recursive /root/workspace/portage/ /etc/
 rm /etc/portage/binrepos.conf/gentoobinhost.conf
 
 # Copy and configure AWS credentials
-cp --recursive /root/workspace/.aws/ /root/
-sed --in-place "s/aws_access_key_id = /aws_access_key_id = $S3_ACCESS_KEY_ID/" /root/.aws/credentials
-sed --in-place "s/aws_secret_access_key = /aws_secret_access_key = $S3_SECRET_ACCESS_KEY/" /root/.aws/credentials
-sed --in-place "s/region = /region = $S3_REGION/" /root/.aws/config
-sed --in-place "s/endpoint_url = /endpoint_url = https:\/\/$S3_ENDPOINT/" /root/.aws/config
+mkdir /root/.aws
+echo -e "[$S3_BUCKET]\naws_access_key_id = $S3_ACCESS_KEY_ID\naws_secret_access_key = $S3_SECRET_ACCESS_KEY" > /root/.aws/credentials
+chmod 600 /root/.aws/credentials
 
 # Download and install AWS CLI
 wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip
@@ -63,7 +61,7 @@ emerge --sync guru
 timeout 19800 emerge $1
 
 # Copy the local changes to the remote cache
-aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET --acl public-read --no-progress --recursive
+aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET --endpoint-url https://$S3_ENDPOINT --no-progress --profile $S3_BUCKET --recursive --region $S3_REGION
 
 # Exit script with status 1 if any previous command failed
 if $error; then
