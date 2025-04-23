@@ -27,17 +27,17 @@ echo -e "[$S3_BUCKET]\naws_access_key_id = $S3_ACCESS_KEY_ID\naws_secret_access_
 chmod 600 /root/.aws/credentials
 
 # Download and install AWS CLI
-wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip
-unzip -q /tmp/awscli-exe-linux-x86_64-2.22.35.zip -d /tmp/
-rm /tmp/awscli-exe-linux-x86_64-2.22.35.zip
+wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.7.zip
+unzip -q /tmp/awscli-exe-linux-x86_64-2.22.7.zip -d /tmp/
+rm /tmp/awscli-exe-linux-x86_64-2.22.7.zip
 /tmp/aws/install
 rm --recursive /tmp/aws/
 
 # Download and install mountpoint-s3 binary
-wget --directory-prefix=/tmp/ --no-verbose https://s3.amazonaws.com/mountpoint-s3-release/latest/x86_64/mount-s3.tar.gz
+wget --directory-prefix=/tmp/ --no-verbose https://s3.amazonaws.com/mountpoint-s3-release/1.12.0/x86_64/mount-s3-1.12.0-x86_64.tar.gz
 mkdir --parents /opt/aws/mountpoint-s3
-tar --extract --directory=/opt/aws/mountpoint-s3/ --file=/tmp/mount-s3.tar.gz
-rm /tmp/mount-s3.tar.gz
+tar --extract --directory=/opt/aws/mountpoint-s3/ --file=/tmp/mount-s3-1.12.0-x86_64.tar.gz
+rm /tmp/mount-s3-1.12.0-x86_64.tar.gz
 ln --symbolic /opt/aws/mountpoint-s3/bin/mount-s3 /usr/local/bin/mount-s3
 
 # Install fuse 2
