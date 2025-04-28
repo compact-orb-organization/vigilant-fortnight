@@ -29,7 +29,7 @@ rm /tmp/mount-s3.tar.gz
 ln --symbolic /opt/aws/mountpoint-s3/bin/mount-s3 /usr/local/bin/mount-s3
 
 # Emerge sys-fs/fuse, explicitly disabling binary package creation for this specific package
-# FUSE is needed for mount-s3 and potentially the overlay filesystem
+# FUSE is needed for mount-s3
 FEATURES="-buildpkg" emerge sys-fs/fuse:0
 
 # Create the AWS credentials directory and file using environment variables
