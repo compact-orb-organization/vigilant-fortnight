@@ -11,6 +11,9 @@ rm /etc/portage/binrepos.conf/gentoobinhost.conf
 # Sync the main Gentoo ebuild repository using emerge-webrsync
 emerge-webrsync --quiet
 
+# Set the Gentoo profile
+eselect --brief profile set 26
+
 # Download, extract, install, and clean up the AWS CLI v2
 wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip
 unzip -q /tmp/awscli-exe-linux-x86_64-2.0.30.zip -d /tmp/
@@ -26,6 +29,7 @@ rm /tmp/mount-s3.tar.gz
 ln --symbolic /opt/aws/mountpoint-s3/bin/mount-s3 /usr/local/bin/mount-s3
 
 # Emerge sys-fs/fuse, explicitly disabling binary package creation for this specific package
+# FUSE is needed for mount-s3 and potentially the overlay filesystem
 FEATURES="-buildpkg" emerge sys-fs/fuse:0
 
 # Create the AWS credentials directory and file using environment variables
@@ -34,7 +38,7 @@ echo -e "[$S3_BUCKET]\naws_access_key_id = $S3_ACCESS_KEY_ID\naws_secret_access_
 chmod 600 /root/.aws/credentials
 
 # Create a mount point and mount the specified S3 bucket/prefix using mount-s3
-# The mount uses a temporary directory for caching
+# The mount uses a temporary directory for caching and is read-only
 mkdir /tmp/mountpoint
 mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --prefix 1/ --profile $S3_BUCKET --read-only --region $S3_REGION $S3_BUCKET /tmp/mountpoint/
 
