@@ -1,0 +1,8 @@
+on:
+  workflow_dispatch:
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker container run --device /dev/fuse --env S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }} --env S3_BUCKET=${{ secrets.S3_BUCKET }} --env S3_ENDPOINT=${{ secrets.S3_ENDPOINT }} --env S3_REGION=${{ secrets.S3_REGION }} --env S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }} --privileged --rm --volume ./2/:/root/workspace --volume /tmp/:/tmp gentoo/stage3:amd64-desktop-systemd bash /root/workspace/emerge.sh "--deep app-admin/sudo app-containers/docker app-containers/docker-cli app-shells/bash-completion net-misc/mosh sys-block/io-scheduler-udev-rules sys-kernel/gentoo-kernel-bin sys-kernel/installkernel sys-kernel/linux-firmware www-servers/nginx"
