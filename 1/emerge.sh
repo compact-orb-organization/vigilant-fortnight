@@ -2,6 +2,15 @@
 error=false
 trap 'error=true' ERR
 
+# Copy the locale configuration file
+cp /root/workspace/locale.gen /etc/
+
+# Generate the specified locales
+locale-gen --quiet
+
+# Set the system locale
+eselect --brief locale set 6
+
 # Copy the custom Portage configuration from the workspace into the container's /etc/
 cp --recursive /root/workspace/portage/ /etc/
 
