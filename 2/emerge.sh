@@ -52,7 +52,7 @@ emerge dev-vcs/git
 emerge --sync guru
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout
-timeout 21000 emerge $1
+timeout 19800 emerge $1
 
 # Copy the newly built binary packages (from the overlay's upperdir) to the S3 bucket
 aws s3 cp /tmp/upperdir/ s3://$S3_BUCKET/2/ --endpoint-url https://$S3_ENDPOINT --no-progress --profile $S3_BUCKET --recursive --region $S3_REGION
