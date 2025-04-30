@@ -40,7 +40,7 @@ chmod 600 /root/.aws/credentials
 # Create a mount point and mount the specified S3 bucket/prefix using mount-s3
 # The mount uses a temporary directory for caching and is read-only
 mkdir /tmp/mountpoint
-mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --prefix 1/ --profile $S3_BUCKET --read-only --region $S3_REGION $S3_BUCKET /tmp/mountpoint/
+mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --force-path-style --prefix 1/ --profile $S3_BUCKET --read-only --region $S3_REGION $S3_BUCKET /tmp/mountpoint/
 
 # Set up an overlay filesystem for the binary package cache (/var/cache/binpkgs)
 # The lower directory is the read-only S3 mount, upper and work directories are temporary local storage
