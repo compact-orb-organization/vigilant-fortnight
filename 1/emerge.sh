@@ -1,3 +1,6 @@
+# Set the date for the Portage snapshot
+portage_snapshot_date="20250429"
+
 # Set up error trapping: if any command fails, set the 'error' variable to true
 error=false
 trap 'error=true' ERR
@@ -18,7 +21,7 @@ cp --recursive /root/workspace/portage/ /etc/
 rm /etc/portage/binrepos.conf/gentoobinhost.conf
 
 # Sync the main Gentoo ebuild repository using emerge-webrsync
-emerge-webrsync --quiet
+emerge-webrsync --revert=$portage_snapshot_date --quiet
 
 # Set the Gentoo profile
 eselect --brief profile set 26
