@@ -57,12 +57,6 @@ mount-s3 --cache /tmp/ --endpoint-url https://$S3_ENDPOINT --prefix 1/ --profile
 mkdir /tmp/upperdir /tmp/workdir
 mount --types overlay overlay --options lowerdir=/tmp/mountpoint/,upperdir=/tmp/upperdir/,workdir=/tmp/workdir/ /var/cache/binpkgs/
 
-# Emerge Git, needed for syncing overlays like GURU
-emerge dev-vcs/git
-
-# Sync the GURU overlay repository
-emerge --sync guru
-
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout
 timeout 19800 emerge $1
 
