@@ -17,9 +17,8 @@ cp --recursive /root/workspace/portage/ /etc/
 # Remove the default Gentoo binary package host configuration
 rm /etc/portage/binrepos.conf/gentoobinhost.conf
 
-# Sync the main Gentoo ebuild repository
+# Sync the main Gentoo ebuild repository using emerge-webrsync
 emerge-webrsync --quiet
-emerge --sync gentoo
 
 # Set the Gentoo profile
 eselect --brief profile set 26
