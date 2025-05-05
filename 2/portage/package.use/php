@@ -1,1 +1,1 @@
-dev-lang/php avif bcmath curl exif fpm ftp gd intl mssql mysql mysqli pdo sharedmem sockets sodium webp xmlreader xmlwriter zip
+dev-lang/php avif bcmath cgi curl exif ftp gd intl mssql mysql mysqli pdo sharedmem sockets sodium webp xmlreader xmlwriter zip
