@@ -22,7 +22,7 @@ jobs:
           wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip
           unzip -q /tmp/awscli-exe-linux-x86_64-2.0.30.zip -d /tmp/
           rm /tmp/awscli-exe-linux-x86_64-2.0.30.zip
-          sudo /tmp/aws/install
+          sudo /tmp/aws/install --update
           rm --recursive /tmp/aws/
 
           # Download, extract, install, and clean up the mount-s3 tool
