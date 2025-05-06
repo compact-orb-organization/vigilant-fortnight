@@ -96,6 +96,7 @@ jobs:
           sudo rm /var/lib/gentoo/tmp/emerge.sh
 
       - name: Upload binary packages
+        if: always()
         run: |
           # Copy the newly built binary packages (from the overlay's upperdir) to the S3 bucket
           sudo aws s3 cp /var/lib/gentoo/tmp/upperdir/ s3://${{ secrets.S3_BUCKET }}/1/ --endpoint-url https://${{ secrets.S3_ENDPOINT }} --no-progress --recursive --region ${{ secrets.S3_REGION }}
