@@ -5,7 +5,7 @@ on:
 
 env:
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: ""
+  EMERGE_PARAMETERS: "@installed"
   STAGE_3_DATE: 20250429T205022Z
 
 jobs:
