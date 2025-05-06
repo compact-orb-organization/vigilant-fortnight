@@ -1,3 +1,5 @@
+name: Emerge 1 installed
+
 on:
   workflow_dispatch:
 
@@ -5,7 +7,7 @@ env:
   STAGE_3_DATE: 20250429T205022Z
 
 jobs:
-  job:
+  emerge:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
