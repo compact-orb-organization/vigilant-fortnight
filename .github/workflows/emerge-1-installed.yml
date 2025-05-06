@@ -18,7 +18,7 @@ jobs:
         run: |
           # Install fuse
           sudo apt-get --quiet update
-          sudo apt-get --quiet install libfuse2
+          sudo apt-get --quiet install libfuse2t64
 
           # Download, extract, install, and clean up the AWS CLI v2
           wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip
