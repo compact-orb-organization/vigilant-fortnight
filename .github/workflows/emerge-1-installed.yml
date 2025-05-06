@@ -42,7 +42,9 @@ jobs:
           # Download, extract, and clean up the Gentoo stage3 tarball
           wget --directory-prefix=/tmp/ --no-verbose http://mirror.rackspace.com/gentoo/releases/amd64/autobuilds/$STAGE_3_DATE/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz
           wget --directory-prefix=/tmp/ --no-verbose https://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE_3_DATE/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz.sha256
-          sudo sha256sum --check /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz.sha256
+          cd /tmp/
+          sha256sum --check stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz.sha256
+          cd -
           if [ $? -ne 0 ]; then
             echo "Checksum verification failed"
             exit 1
