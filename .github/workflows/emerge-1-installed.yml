@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
 
 env:
+  CONFIG_PREFIX: 1
+  EMERGE_PARAMETERS: ""
   STAGE_3_DATE: 20250429T205022Z
 
 jobs:
@@ -55,10 +57,10 @@ jobs:
           rm /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz
 
           # Copy the locale configuration file
-          sudo cp ./1/locale.gen /var/lib/gentoo/etc/
+          sudo cp ./$CONFIG_PREFIX/locale.gen /var/lib/gentoo/etc/
 
           # Copy the Portage configuration files
-          sudo cp --recursive ./1/portage/ /var/lib/gentoo/etc/
+          sudo cp --recursive ./$CONFIG_PREFIX/portage/ /var/lib/gentoo/etc/
 
           # Remove the default Gentoo binary package host configuration
           sudo rm /var/lib/gentoo/etc/portage/binrepos.conf/gentoobinhost.conf
@@ -89,8 +91,8 @@ jobs:
 
       - name: Chroot and run emerge.sh
         run: |
-          sudo cp ./1/emerge.sh /var/lib/gentoo/tmp/
-          sudo chroot /var/lib/gentoo env S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }} S3_BUCKET=${{ secrets.S3_BUCKET }} S3_ENDPOINT=${{ secrets.S3_ENDPOINT }} S3_REGION=${{ secrets.S3_REGION }} S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }} /usr/bin/bash /tmp/emerge.sh @installed
+          sudo cp ./$CONFIG_PREFIX/emerge.sh /var/lib/gentoo/tmp/
+          sudo chroot /var/lib/gentoo env S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }} S3_BUCKET=${{ secrets.S3_BUCKET }} S3_ENDPOINT=${{ secrets.S3_ENDPOINT }} S3_REGION=${{ secrets.S3_REGION }} S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }} /usr/bin/bash /tmp/emerge.sh $EMERGE_PARAMETERS
           sudo rm /var/lib/gentoo/tmp/emerge.sh
 
       - name: Upload binary packages
