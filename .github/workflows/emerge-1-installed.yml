@@ -15,8 +15,8 @@ jobs:
       - name: Install dependencies
         run: |
           # Install fuse
-          sudo apt update
-          sudo apt install fuse
+          sudo apt --quiet update
+          sudo apt --quiet install fuse
 
           # Download, extract, install, and clean up the AWS CLI v2
           wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip
@@ -42,7 +42,7 @@ jobs:
           # Download, extract, and clean up the Gentoo stage3 tarball
           wget --directory-prefix=/tmp/ --no-verbose http://mirror.rackspace.com/gentoo/releases/amd64/autobuilds/$STAGE_3_DATE/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz
           wget --directory-prefix=/tmp/ --no-verbose https://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE_3_DATE/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz.sha256
-          sha256sum --check /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz.sha256
+          sudo sha256sum --check /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz.sha256
           if [ $? -ne 0 ]; then
             echo "Checksum verification failed"
             exit 1
