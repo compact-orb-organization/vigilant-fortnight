@@ -82,7 +82,7 @@ jobs:
           # Create a mount point and mount the specified S3 bucket/prefix using mount-s3
           # The mount uses a temporary directory for caching and is read-only
           sudo mkdir /var/lib/gentoo/tmp/mountpoint
-          sudo mount-s3 --cache /var/lib/gentoo/tmp/ --endpoint-url https://${{ secrets.S3_ENDPOINT }} --prefix 1/ --read-only --region ${{ secrets.S3_REGION }} ${{ secrets.S3_BUCKET }} /var/lib/gentoo/tmp/mountpoint/
+          sudo mount-s3 --cache /var/lib/gentoo/tmp/ --endpoint-url https://${{ secrets.S3_ENDPOINT }} --prefix $CONFIG_PREFIX/ --read-only --region ${{ secrets.S3_REGION }} ${{ secrets.S3_BUCKET }} /var/lib/gentoo/tmp/mountpoint/
 
           # Set up an overlay filesystem for the binary package cache (/var/cache/binpkgs)
           # The lower directory is the read-only S3 mount, upper and work directories are temporary local storage
@@ -100,4 +100,4 @@ jobs:
         if: always()
         run: |
           # Copy the newly built binary packages (from the overlay's upperdir) to the S3 bucket
-          sudo aws s3 cp /var/lib/gentoo/tmp/upperdir/ s3://${{ secrets.S3_BUCKET }}/1/ --endpoint-url https://${{ secrets.S3_ENDPOINT }} --no-progress --recursive --region ${{ secrets.S3_REGION }}
+          sudo aws s3 cp /var/lib/gentoo/tmp/upperdir/ s3://${{ secrets.S3_BUCKET }}/$CONFIG_PREFIX/ --endpoint-url https://${{ secrets.S3_ENDPOINT }} --no-progress --recursive --region ${{ secrets.S3_REGION }}
