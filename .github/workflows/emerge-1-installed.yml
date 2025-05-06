@@ -15,85 +15,85 @@ jobs:
       - name: Install dependencies
         run: |
           # Install fuse
-          apt update
-          apt install fuse
+          sudo apt update
+          sudo apt install fuse
 
           # Download, extract, install, and clean up the AWS CLI v2
           wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip
           unzip -q /tmp/awscli-exe-linux-x86_64-2.0.30.zip -d /tmp/
           rm /tmp/awscli-exe-linux-x86_64-2.0.30.zip
-          /tmp/aws/install
+          sudo /tmp/aws/install
           rm --recursive /tmp/aws/
 
           # Download, extract, install, and clean up the mount-s3 tool
           wget --directory-prefix=/tmp/ --no-verbose https://s3.amazonaws.com/mountpoint-s3-release/latest/x86_64/mount-s3.tar.gz
-          mkdir --parents /opt/aws/mountpoint-s3
-          tar --extract --directory=/opt/aws/mountpoint-s3/ --file=/tmp/mount-s3.tar.gz
+          sudo mkdir --parents /opt/aws/mountpoint-s3
+          sudo tar --extract --directory=/opt/aws/mountpoint-s3/ --file=/tmp/mount-s3.tar.gz
           rm /tmp/mount-s3.tar.gz
-          ln --symbolic /opt/aws/mountpoint-s3/bin/mount-s3 /usr/local/bin/mount-s3
+          sudo ln --symbolic /opt/aws/mountpoint-s3/bin/mount-s3 /usr/local/bin/mount-s3
 
       - name: Authenticate S3
         run: |
-          aws configure set aws_access_key_id ${{ secrets.S3_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          sudo aws configure set aws_access_key_id ${{ secrets.S3_ACCESS_KEY_ID }}
+          sudo aws configure set aws_secret_access_key ${{ secrets.S3_SECRET_ACCESS_KEY }}
 
       - name: Set up Gentoo stage 3
         run: |
           # Download, extract, and clean up the Gentoo stage3 tarball
           wget --directory-prefix=/tmp/ --no-verbose https://mirror.rackspace.com/gentoo/releases/amd64/autobuilds/20250429T205022Z/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz
-          mkdir /var/lib/gentoo
-          tar --directory=/var/lib/gentoo --extract --file /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
+          sudo mkdir /var/lib/gentoo
+          sudo tar --directory=/var/lib/gentoo --extract --file /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
           rm /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz
 
           # Copy the locale configuration file
-          cp ./1/locale.gen /var/lib/gentoo/etc/
+          sudo cp ./1/locale.gen /var/lib/gentoo/etc/
 
           # Copy the Portage configuration files
-          cp --recursive ./1/portage/ /var/lib/gentoo/etc/
+          sudo cp --recursive ./1/portage/ /var/lib/gentoo/etc/
 
           # Remove the default Gentoo binary package host configuration
-          rm /var/lib/gentoo/etc/portage/binrepos.conf/gentoobinhost.conf
+          sudo rm /var/lib/gentoo/etc/portage/binrepos.conf/gentoobinhost.conf
 
       - name: Mount filesystems
         run: |
-          mount --types proc /proc /var/lib/gentoo/proc
-          mount --rbind /sys /var/lib/gentoo/sys
-          mount --make-rslave /var/lib/gentoo/sys
-          mount --rbind /dev /var/lib/gentoo/dev
-          mount --make-rslave /var/lib/gentoo/dev
-          mount --bind /run /var/lib/gentoo/run
-          mount --make-slave /var/lib/gentoo/run
-          mount --types tmpfs tmpfs /var/lib/gentoo/tmp
+          sudo mount --types proc /proc /var/lib/gentoo/proc
+          sudo mount --rbind /sys /var/lib/gentoo/sys
+          sudo mount --make-rslave /var/lib/gentoo/sys
+          sudo mount --rbind /dev /var/lib/gentoo/dev
+          sudo mount --make-rslave /var/lib/gentoo/dev
+          sudo mount --bind /run /var/lib/gentoo/run
+          sudo mount --make-slave /var/lib/gentoo/run
+          sudo mount --types tmpfs tmpfs /var/lib/gentoo/tmp
 
       - name: Mount S3 bucket
         run: |
           # Create a mount point and mount the specified S3 bucket/prefix using mount-s3
           # The mount uses a temporary directory for caching and is read-only
-          mkdir /var/lib/gentoo/tmp/mountpoint
-          mount-s3 --cache /var/lib/gentoo/tmp/ --endpoint-url https://${{ secrets.S3_ENDPOINT }} --prefix 1/ --read-only --region ${{ secrets.S3_REGION }} ${{ secrets.S3_BUCKET }} /var/lib/gentoo/tmp/mountpoint/
+          sudo mkdir /var/lib/gentoo/tmp/mountpoint
+          sudo mount-s3 --cache /var/lib/gentoo/tmp/ --endpoint-url https://${{ secrets.S3_ENDPOINT }} --prefix 1/ --read-only --region ${{ secrets.S3_REGION }} ${{ secrets.S3_BUCKET }} /var/lib/gentoo/tmp/mountpoint/
 
           # Set up an overlay filesystem for the binary package cache (/var/cache/binpkgs)
           # The lower directory is the read-only S3 mount, upper and work directories are temporary local storage
           # This allows new binary packages to be written locally before being uploaded
-          mkdir /var/lib/gentoo/tmp/upperdir /var/lib/gentoo/tmp/workdir
-          mount --types overlay overlay --options lowerdir=/var/lib/gentoo/tmp/mountpoint/,upperdir=/var/lib/gentoo/tmp/upperdir/,workdir=/var/lib/gentoo/tmp/workdir/ /var/lib/gentoo/var/cache/binpkgs/
+          sudo mkdir /var/lib/gentoo/tmp/upperdir /var/lib/gentoo/tmp/workdir
+          sudo mount --types overlay overlay --options lowerdir=/var/lib/gentoo/tmp/mountpoint/,upperdir=/var/lib/gentoo/tmp/upperdir/,workdir=/var/lib/gentoo/tmp/workdir/ /var/lib/gentoo/var/cache/binpkgs/
 
       - name: Chroot and run emerge.sh
         run: |
-          cp ./1/emerge.sh /var/lib/gentoo/tmp/
-          chroot /var/lib/gentoo env S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }} S3_BUCKET=${{ secrets.S3_BUCKET }} S3_ENDPOINT=${{ secrets.S3_ENDPOINT }} S3_REGION=${{ secrets.S3_REGION }} S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }} /usr/bin/bash /tmp/emerge.sh @installed
-          rm /var/lib/gentoo/tmp/emerge.sh
+          sudo cp ./1/emerge.sh /var/lib/gentoo/tmp/
+          sudo chroot /var/lib/gentoo env S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }} S3_BUCKET=${{ secrets.S3_BUCKET }} S3_ENDPOINT=${{ secrets.S3_ENDPOINT }} S3_REGION=${{ secrets.S3_REGION }} S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }} /usr/bin/bash /tmp/emerge.sh @installed
+          sudo rm /var/lib/gentoo/tmp/emerge.sh
 
       - name: Upload binary packages
         run: |
           # Copy the newly built binary packages (from the overlay's upperdir) to the S3 bucket
-          aws s3 cp /var/lib/gentoo/tmp/upperdir/ s3://${{ secrets.S3_BUCKET }}/1/ --endpoint-url https://${{ secrets.S3_ENDPOINT }} --no-progress --recursive --region ${{ secrets.S3_REGION }}
+          sudo aws s3 cp /var/lib/gentoo/tmp/upperdir/ s3://${{ secrets.S3_BUCKET }}/1/ --endpoint-url https://${{ secrets.S3_ENDPOINT }} --no-progress --recursive --region ${{ secrets.S3_REGION }}
 
       - name: Clean up
         run: |
-          umount /var/lib/gentoo/var/cache/binpkgs/
-          fusermount -u /var/lib/gentoo/tmp/mountpoint/
-          umount --lazy /var/lib/gentoo/dev{/shm,/pts,}
-          umount --recursive /var/lib/gentoo
-          rm --recursive /var/lib/gentoo/
-          rm --recursive ~/.aws/
+          sudo umount /var/lib/gentoo/var/cache/binpkgs/
+          sudo fusermount -u /var/lib/gentoo/tmp/mountpoint/
+          sudo umount --lazy /var/lib/gentoo/dev{/shm,/pts,}
+          sudo umount --recursive /var/lib/gentoo
+          sudo rm --recursive /var/lib/gentoo/
+          sudo rm --recursive ~/.aws/
