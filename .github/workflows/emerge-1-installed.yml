@@ -104,6 +104,6 @@ jobs:
         run: |
           sudo umount /var/lib/gentoo/var/cache/binpkgs/ /var/lib/gentoo/tmp/mountpoint/
           sudo umount --lazy /var/lib/gentoo/dev{/shm,/pts,}
-          sudo umount --recursive /var/lib/gentoo
+          sudo umount /var/lib/gentoo/{proc,sys,run,tmp}
           sudo rm --recursive /var/lib/gentoo/
           sudo rm --recursive ~/.aws/
