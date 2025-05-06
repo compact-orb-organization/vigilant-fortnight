@@ -49,7 +49,7 @@ jobs:
             echo "Checksum verification failed"
             exit 1
           fi
-          rm stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz.sha256
+          rm /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz.sha256
           sudo mkdir /var/lib/gentoo
           sudo tar --directory=/var/lib/gentoo/ --extract --file /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
           rm /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz
