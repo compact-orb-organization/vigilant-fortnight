@@ -40,7 +40,7 @@ jobs:
       - name: Set up Gentoo stage 3
         run: |
           # Download, extract, and clean up the Gentoo stage3 tarball
-          wget --directory-prefix=/tmp/ --no-verbose https://mirror.rackspace.com/gentoo/releases/amd64/autobuilds/20250429T205022Z/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz
+          wget --directory-prefix=/tmp/ --no-verbose https://mirror.rackspace.com/gentoo/releases/amd64/autobuilds/$STAGE_3_DATE/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz
           sudo mkdir /var/lib/gentoo
           sudo tar --directory=/var/lib/gentoo/ --extract --file /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
           rm /tmp/stage3-amd64-desktop-systemd-$STAGE_3_DATE.tar.xz
