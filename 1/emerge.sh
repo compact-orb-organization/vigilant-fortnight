@@ -1,5 +1,5 @@
 # Set the date for the Portage snapshot
-portage_snapshot_date="20250429"
+portage_snapshot_date="20250504"
 
 # Set up error trapping: if any command fails, set the 'error' variable to true
 error=false
