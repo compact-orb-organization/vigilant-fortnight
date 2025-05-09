@@ -7,7 +7,7 @@
 # to errors. If a package fails to build with these, LTO should not be used there.
 WARNING_FLAGS="-Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
 
-COMMON_FLAGS="-O3 -pipe -march=x86-64-v3 -fno-semantic-interposition -flto ${WARNING_FLAGS}"
+COMMON_FLAGS="-O3 -pipe -march=goldmont-plus -fno-semantic-interposition -flto ${WARNING_FLAGS}"
 CFLAGS="${COMMON_FLAGS}"
 CXXFLAGS="${COMMON_FLAGS}"
 FCFLAGS="${COMMON_FLAGS}"
@@ -20,7 +20,7 @@ GENTOO_MIRRORS="http://mirror.rackspace.com/gentoo http://distfiles.gentoo.org"
 
 RUSTFLAGS="${RUSTFLAGS} --codegen target-cpu=goldmont-plus"
 
-USE="lto dist-kernel jemalloc ktls nginx"
+USE="lto dist-kernel jemalloc ffmpeg vaapi vpx screencast samba"
 
 ACCEPT_LICENSE="*"
 
@@ -32,7 +32,11 @@ CGO_LDFLAGS="${LDFLAGS}"
 # https://github.com/golang/go/wiki/MinimumRequirements#architectures
 # Pick carefully based on https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels!
 # For amd64 (v1 (default)/v2/v3/v4):
-GOAMD64="v3"
+GOAMD64="v2"
+
+# vigilant-fortnight specific
+EMERGE_DEFAULT_OPTS="--quiet-build --usepkg --buildpkg"
+BINPKG_COMPRESS="xz"
 
 # NOTE: This stage was built with the bindist USE flag enabled
 

@@ -34,6 +34,10 @@ CGO_LDFLAGS="${LDFLAGS}"
 # For amd64 (v1 (default)/v2/v3/v4):
 GOAMD64="v3"
 
+# vigilant-fortnight specific
+EMERGE_DEFAULT_OPTS="--quiet-build --usepkg --buildpkg"
+BINPKG_COMPRESS="xz"
+
 # NOTE: This stage was built with the bindist USE flag enabled
 
 # This sets the language of build output to English.
