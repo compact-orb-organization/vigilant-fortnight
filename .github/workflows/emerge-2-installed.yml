@@ -24,20 +24,20 @@ jobs:
 
           # Set AWS architecture based on stage 3 architecture
           if [ $STAGE_3_ARCHITECTURE == "amd64" ]; then
-            AWS_ARCHITECTURE="x86_64"
-          elif [ $STAGE_3_ARCHITECTURE == "aarch64" ]; then
-            AWS_ARCHITECTURE="arm64"
+            AWS_CLI_ARCHITECTURE="x86_64"
+          elif [ $STAGE_3_ARCHITECTURE == "arm64" ]; then
+            AWS_CLI_ARCHITECTURE="aarch64"
           fi
 
           # Download, extract, install, and clean up the AWS CLI v2
-          wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-$AWS_ARCHITECTURE-2.0.30.zip
-          unzip -q /tmp/awscli-exe-linux-$AWS_ARCHITECTURE-2.0.30.zip -d /tmp/
-          rm /tmp/awscli-exe-linux-$AWS_ARCHITECTURE-2.0.30.zip
+          wget --directory-prefix=/tmp/ --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-$AWS_CLI_ARCHITECTURE-2.0.30.zip
+          unzip -q /tmp/awscli-exe-linux-$AWS_CLI_ARCHITECTURE-2.0.30.zip -d /tmp/
+          rm /tmp/awscli-exe-linux-$AWS_CLI_ARCHITECTURE-2.0.30.zip
           sudo /tmp/aws/install --update
           rm --recursive /tmp/aws/
 
           # Download, extract, install, and clean up the mount-s3 tool
-          wget --directory-prefix=/tmp/ --no-verbose https://s3.amazonaws.com/mountpoint-s3-release/latest/$AWS_ARCHITECTURE/mount-s3.tar.gz
+          wget --directory-prefix=/tmp/ --no-verbose https://s3.amazonaws.com/mountpoint-s3-release/latest/$STAGE_3_ARCHITECTURE/mount-s3.tar.gz
           sudo mkdir --parents /opt/aws/mountpoint-s3
           sudo tar --extract --directory=/opt/aws/mountpoint-s3/ --file=/tmp/mount-s3.tar.gz
           rm /tmp/mount-s3.tar.gz
