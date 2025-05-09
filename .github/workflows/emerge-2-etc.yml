@@ -6,8 +6,9 @@ on:
 env:
   CONFIG_PREFIX: 2
   EMERGE_PARAMETERS: "--deep app-admin/sudo app-containers/docker app-containers/docker-cli app-containers/docker-compose app-misc/jq app-misc/screen app-shells/bash-completion dev-db/mariadb dev-lang/rust-bin dev-libs/mimalloc dev-vcs/git net-libs/nodejs net-misc/mosh net-vpn/wireguard-tools sys-block/io-scheduler-udev-rules sys-kernel/gentoo-kernel-bin sys-kernel/installkernel sys-kernel/linux-firmware www-servers/nginx"
+  STAGE_3_ARCHITECTURE: amd64
   STAGE_3_DATE: 20250504T164008Z
-  STAGE_3_PROFILE: amd64-nomultilib-systemd
+  STAGE_3_PROFILE: nomultilib-systemd
 
 jobs:
   emerge:
@@ -43,19 +44,19 @@ jobs:
       - name: Set up Gentoo environment
         run: |
           # Download, extract, and clean up the Gentoo stage3 tarball
-          wget --directory-prefix=/tmp/ --no-verbose http://mirror.rackspace.com/gentoo/releases/amd64/autobuilds/$STAGE_3_DATE/stage3-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz
-          wget --directory-prefix=/tmp/ --no-verbose https://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE_3_DATE/stage3-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz.sha256
+          wget --directory-prefix=/tmp/ --no-verbose http://mirror.rackspace.com/gentoo/releases/$STAGE_3_ARCHITECTURE/autobuilds/$STAGE_3_DATE/stage3-$STAGE_3_ARCHITECTURE-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz
+          wget --directory-prefix=/tmp/ --no-verbose https://distfiles.gentoo.org/releases/$STAGE_3_ARCHITECTURE/autobuilds/$STAGE_3_DATE/stage3-$STAGE_3_ARCHITECTURE-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz.sha256
           cd /tmp/
-          sha256sum --check stage3-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz.sha256
+          sha256sum --check stage3-$STAGE_3_ARCHITECTURE-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz.sha256
           if [ $? -ne 0 ]; then
             echo "Checksum verification failed"
             exit 1
           fi
           cd -
-          rm /tmp/stage3-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz.sha256
+          rm /tmp/stage3-$STAGE_3_ARCHITECTURE-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz.sha256
           sudo mkdir /var/lib/gentoo
-          sudo tar --directory=/var/lib/gentoo/ --extract --file /tmp/stage3-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
-          rm /tmp/stage3-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz
+          sudo tar --directory=/var/lib/gentoo/ --extract --file /tmp/stage3-$STAGE_3_ARCHITECTURE-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
+          rm /tmp/stage3-$STAGE_3_ARCHITECTURE-$STAGE_3_PROFILE-$STAGE_3_DATE.tar.xz
 
           # Copy the locale configuration file
           sudo cp ./$CONFIG_PREFIX/locale.gen /var/lib/gentoo/etc/
