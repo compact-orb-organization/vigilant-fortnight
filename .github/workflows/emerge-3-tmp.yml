@@ -8,7 +8,7 @@ env:
   EMERGE_PARAMETERS: ""
   STAGE_3_ARCHITECTURE: arm64
   STAGE_3_DATE: 20250504T233956Z
-  STAGE_3_PROFILE: nomultilib-systemd
+  STAGE_3_PROFILE: systemd
 
 jobs:
   emerge:
