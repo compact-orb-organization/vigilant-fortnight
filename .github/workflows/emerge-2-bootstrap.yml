@@ -34,7 +34,7 @@ jobs:
 
           # Copy the Portage configuration files
           sudo cp --recursive ./$CONFIG_PREFIX/portage /var/lib/gentoo/etc
-          sudo cp ./$CONFIG_PREFIX/make.conf.emerge /var/lib/gentoo/etc/portage/make.conf
+          sudo cp ./$CONFIG_PREFIX/make-emerge.conf /var/lib/gentoo/etc/portage/make.conf
 
           # Remove the default Gentoo binary package host configuration
           sudo rm /var/lib/gentoo/etc/portage/binrepos.conf/gentoobinhost.conf
