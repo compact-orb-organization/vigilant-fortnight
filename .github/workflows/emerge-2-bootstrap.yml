@@ -16,11 +16,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get --quiet update
-          sudo apt-get --quiet install sshfs sshpass
+          sudo apt-get --quiet install sshfs
 
       - name: Set up Gentoo environment
         run: |
           # Download, extract, and clean up the Gentoo tarball
+          echo "* ssh-rsa ${{ secrets.SFTP_HOST_KEY }}" | tee --append ~/.ssh/known_hosts
           sshpass -p${{ secrets.SFTP_PASSWORD }} sftp ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX.tar.xz /tmp
           sudo mkdir /var/lib/gentoo
           sudo tar --directory=/var/lib/gentoo --extract --file=/tmp/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
@@ -53,6 +54,7 @@ jobs:
       - name: Mount SFTP storage
         run: |
           sudo mkdir /var/lib/gentoo/tmp/remote
+          echo "* ssh-rsa ${{ secrets.SFTP_HOST_KEY }}" | sudo tee --append ~/.ssh/known_hosts
           sudo sshfs -o allow_other,default_permissions,password_stdin ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX /var/lib/gentoo/tmp/remote <<< ${{ secrets.SFTP_PASSWORD }}
 
           # Set up an overlay filesystem for the binary package cache (/var/cache/binpkgs)
