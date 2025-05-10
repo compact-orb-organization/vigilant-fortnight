@@ -79,7 +79,8 @@ jobs:
         run: |
           sudo umount /var/lib/gentoo/var/cache/binpkgs
           sudo umount /var/lib/gentoo/tmp/remote
-          sudo umount --lazy /var/lib/gentoo/dev{/shm,/pts,/tmp}
+          sudo umount --lazy /var/lib/gentoo/dev{/shm,/pts}
+          sudo umount --lazy /var/lib/gentoo/tmp
           sudo umount /var/lib/gentoo/{dev,proc,run,sys}
 
       - name : Upload Gentoo tarball
