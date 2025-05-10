@@ -20,8 +20,11 @@ jobs:
 
       - name: Set up Gentoo environment
         run: |
+          sudo ls -l ~/.ssh
           # Download, extract, and clean up the Gentoo tarball
-          echo "* ssh-rsa ${{ secrets.SFTP_HOST_KEY }}" | tee --append ~/.ssh/known_hosts
+          mkdir ~/.ssh
+          chmod 700 ~/.ssh
+          echo "* ssh-rsa ${{ secrets.SFTP_HOST_KEY }}" | tee ~/.ssh/known_hosts
           sshpass -p${{ secrets.SFTP_PASSWORD }} sftp ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX.tar.xz /tmp
           sudo mkdir /var/lib/gentoo
           sudo tar --directory=/var/lib/gentoo --extract --file=/tmp/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
