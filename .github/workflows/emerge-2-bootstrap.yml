@@ -57,7 +57,7 @@ jobs:
         run: |
           sudo mkdir /var/lib/gentoo/tmp/remote
           sudo bash -c "echo '* ${{ secrets.SFTP_HOST_KEY }}' | tee --append ~/.ssh/known_hosts"
-          sudo sshfs -o allow_other,default_permissions,password_stdin ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX /var/lib/gentoo/tmp/remote <<< ${{ secrets.SFTP_PASSWORD }}
+          sudo sshfs -o allow_other,kernel_cache,password_stdin,umask=777 ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX /var/lib/gentoo/tmp/remote <<< ${{ secrets.SFTP_PASSWORD }}
 
           # Set up an overlay filesystem for the binary package cache (/var/cache/binpkgs)
           # The lower directory is the SFTP mount, upper and work directories are temporary local storage
