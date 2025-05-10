@@ -64,6 +64,7 @@ jobs:
           # This allows new binary packages to be written locally before being uploaded
           sudo mkdir /var/lib/gentoo/tmp/upperdir /var/lib/gentoo/tmp/workdir
           sudo mount --types overlay overlay --options lowerdir=/var/lib/gentoo/tmp/remote,upperdir=/var/lib/gentoo/tmp/upperdir,workdir=/var/lib/gentoo/tmp/workdir /var/lib/gentoo/var/cache/binpkgs
+          sudo ls -la /var/lib/gentoo/var/cache/binpkgs
 
       - name: Chroot and run emerge-first.sh
         run: |
