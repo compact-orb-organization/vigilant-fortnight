@@ -20,9 +20,8 @@ jobs:
 
       - name: Set up Gentoo environment
         run: |
-          sudo ls -l ~/.ssh
           # Download, extract, and clean up the Gentoo tarball
-          mkdir ~/.ssh
+          mkdir --parents ~/.ssh
           chmod 700 ~/.ssh
           echo "* ssh-rsa ${{ secrets.SFTP_HOST_KEY }}" | tee ~/.ssh/known_hosts
           sshpass -p${{ secrets.SFTP_PASSWORD }} sftp ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX.tar.xz /tmp
@@ -57,7 +56,6 @@ jobs:
       - name: Mount SFTP storage
         run: |
           sudo mkdir /var/lib/gentoo/tmp/remote
-          echo "* ssh-rsa ${{ secrets.SFTP_HOST_KEY }}" | sudo tee --append ~/.ssh/known_hosts
           sudo sshfs -o allow_other,default_permissions,password_stdin ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX /var/lib/gentoo/tmp/remote <<< ${{ secrets.SFTP_PASSWORD }}
 
           # Set up an overlay filesystem for the binary package cache (/var/cache/binpkgs)
@@ -73,7 +71,6 @@ jobs:
           sudo rm /var/lib/gentoo/tmp/emerge-first.sh
 
       - name: Upload binary packages
-        if: always()
         run: |
           sshpass -p${{ secrets.SFTP_PASSWORD }} sftp /var/lib/gentoo/tmp/upperdir/ ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX
 
