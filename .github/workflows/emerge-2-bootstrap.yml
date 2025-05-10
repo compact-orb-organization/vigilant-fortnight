@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get --quiet update
-          sudo apt-get --quiet install sshfs
+#      - name: Install dependencies
+#        run: |
+#          sudo apt-get --quiet update
+#          sudo apt-get --quiet install sshfs
 
       - name: Set up Gentoo environment
         run: |
@@ -53,17 +53,17 @@ jobs:
           sudo mount --make-slave /var/lib/gentoo/run
           sudo mount --types tmpfs tmpfs /var/lib/gentoo/tmp
 
-      - name: Mount SFTP storage
-        run: |
-          sudo mkdir /var/lib/gentoo/tmp/remote
-          sudo bash -c "echo '* ${{ secrets.SFTP_HOST_KEY }}' | tee --append ~/.ssh/known_hosts"
-          sudo sshfs -o allow_other,default_permissions,password_stdin ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX /var/lib/gentoo/tmp/remote <<< ${{ secrets.SFTP_PASSWORD }}
-
-          # Set up an overlay filesystem for the binary package cache (/var/cache/binpkgs)
-          # The lower directory is the SFTP mount, upper and work directories are temporary local storage
-          # This allows new binary packages to be written locally before being uploaded
-          sudo mkdir /var/lib/gentoo/tmp/upperdir /var/lib/gentoo/tmp/workdir
-          sudo mount --types overlay overlay --options lowerdir=/var/lib/gentoo/tmp/remote,upperdir=/var/lib/gentoo/tmp/upperdir,workdir=/var/lib/gentoo/tmp/workdir /var/lib/gentoo/var/cache/binpkgs
+#      - name: Mount SFTP storage
+#        run: |
+#          sudo mkdir /var/lib/gentoo/tmp/remote
+#          sudo bash -c "echo '* ${{ secrets.SFTP_HOST_KEY }}' | tee --append ~/.ssh/known_hosts"
+#          sudo sshfs -o allow_other,default_permissions,password_stdin ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX /var/lib/gentoo/tmp/remote <<< ${{ secrets.SFTP_PASSWORD }}
+#
+#          # Set up an overlay filesystem for the binary package cache (/var/cache/binpkgs)
+#          # The lower directory is the SFTP mount, upper and work directories are temporary local storage
+#          # This allows new binary packages to be written locally before being uploaded
+#          sudo mkdir /var/lib/gentoo/tmp/upperdir /var/lib/gentoo/tmp/workdir
+#          sudo mount --types overlay overlay --options lowerdir=/var/lib/gentoo/tmp/remote,upperdir=/var/lib/gentoo/tmp/upperdir,workdir=/var/lib/gentoo/tmp/workdir /var/lib/gentoo/var/cache/binpkgs
 
       - name: Chroot and run emerge-first.sh
         run: |
@@ -73,7 +73,7 @@ jobs:
 
       - name: Upload binary packages
         run: |
-          sshpass -p${{ secrets.SFTP_PASSWORD }} sftp /var/lib/gentoo/tmp/upperdir/ ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX
+          sshpass -p${{ secrets.SFTP_PASSWORD }} sftp /var/lib/gentoo/var/cache/binpkgs ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX
 
       - name: Unmount filesystems
         run: |
