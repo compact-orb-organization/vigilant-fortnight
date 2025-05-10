@@ -1,11 +1,11 @@
-name: Emerge 2 bootstrap
+name: 2 bootstrap toolchain
 
 on:
   workflow_dispatch:
 
 env:
   CONFIG_PREFIX: 2
-  EMERGE_PARAMETERS: "--deep --emptytree sys-devel/binutils sys-devel/gcc sys-kernel/linux-headers sys-libs/glibc"
+  EMERGE_PARAMETERS: --deep --emptytree sys-devel/binutils sys-devel/gcc sys-kernel/linux-headers sys-libs/glibc
 
 jobs:
   emerge:
@@ -16,18 +16,15 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get --quiet update
-          sudo apt-get --quiet install sshfs
+          sudo apt-get --quiet install rclone
 
       - name: Set up Gentoo environment
         run: |
           # Download, extract, and clean up the Gentoo tarball
-          mkdir --parents ~/.ssh
-          chmod 700 ~/.ssh
-          echo "* ${{ secrets.SFTP_HOST_KEY }}" | tee ~/.ssh/known_hosts
-          sshpass -p${{ secrets.SFTP_PASSWORD }} sftp ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX.tar.xz /tmp
+          rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} cp :sftp:$CONFIG_PREFIX-bootstrap.tar.xz /tmp
           sudo mkdir /var/lib/gentoo
-          sudo tar --directory=/var/lib/gentoo --extract --file=/tmp/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
-          rm /tmp/$CONFIG_PREFIX.tar.xz
+          sudo tar --directory=/var/lib/gentoo --extract --file=/tmp/$CONFIG_PREFIX-bootstrap.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
+          rm /tmp/$CONFIG_PREFIX-bootstrap.tar.xz
 
           # Copy the locale configuration file
           sudo cp ./$CONFIG_PREFIX/locale.gen /var/lib/gentoo/etc
@@ -53,39 +50,23 @@ jobs:
           sudo mount --make-slave /var/lib/gentoo/run
           sudo mount --types tmpfs tmpfs /var/lib/gentoo/tmp
 
-      - name: Mount SFTP storage
-        run: |
-          sudo mkdir /var/lib/gentoo/tmp/remote
-          sudo bash -c "echo '* ${{ secrets.SFTP_HOST_KEY }}' | tee --append ~/.ssh/known_hosts"
-          sudo sshfs -o password_stdin ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX /var/lib/gentoo/tmp/remote <<< ${{ secrets.SFTP_PASSWORD }}
-
-          # Set up an overlay filesystem for the binary package cache (/var/cache/binpkgs)
-          # The lower directory is the SFTP mount, upper and work directories are temporary local storage
-          # This allows new binary packages to be written locally before being uploaded
-          sudo mkdir /var/lib/gentoo/tmp/upperdir /var/lib/gentoo/tmp/workdir
-          sudo mount --types overlay overlay --options lowerdir=/var/lib/gentoo/tmp/remote,upperdir=/var/lib/gentoo/tmp/upperdir,workdir=/var/lib/gentoo/tmp/workdir /var/lib/gentoo/var/cache/binpkgs
-          sudo ls -la /var/lib/gentoo/var/cache/binpkgs
-
       - name: Chroot and run emerge-first.sh
         run: |
           sudo cp ./$CONFIG_PREFIX/emerge-first.sh /var/lib/gentoo/tmp
           sudo chroot /var/lib/gentoo /usr/bin/bash /tmp/emerge-first.sh "$EMERGE_PARAMETERS"
           sudo rm /var/lib/gentoo/tmp/emerge-first.sh
 
-      - name: Upload binary packages
-        run: |
-          sshpass -p${{ secrets.SFTP_PASSWORD }} sftp /var/lib/gentoo/tmp/upperdir/ ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX
-
       - name: Unmount filesystems
+        if: always()
         run: |
-          sudo umount /var/lib/gentoo/var/cache/binpkgs
-          sudo umount /var/lib/gentoo/tmp/remote
           sudo umount --lazy /var/lib/gentoo/dev{/shm,/pts}
           sudo umount --lazy /var/lib/gentoo/tmp
           sudo umount /var/lib/gentoo/{dev,proc,run,sys}
 
       - name : Upload Gentoo tarball
+        if: always()
         run: |
           # Create a tarball of the Gentoo environment
+          rm --recursive /var/lib/gentoo/var/db/repos/gentoo
           tar --create --directory=/var/lib/gentoo --file=/var/tmp/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*' --xz .
-          sshpass -p${{ secrets.SFTP_PASSWORD }} sftp /var/tmp/$CONFIG_PREFIX.tar.xz ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:$CONFIG_PREFIX.tar.xz
+          rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy /var/tmp/$CONFIG_PREFIX.tar.xz :sftp:$CONFIG_PREFIX.tar.xz

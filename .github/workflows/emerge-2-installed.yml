@@ -1,4 +1,4 @@
-name: Emerge 2 installed
+name: Broken emerge 2 installed
 
 on:
   workflow_dispatch:
