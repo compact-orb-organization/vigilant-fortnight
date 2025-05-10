@@ -54,6 +54,6 @@ jobs:
         if: always()
         run: |
           # Create a tarball of the Gentoo environment
-          rm --recursive /var/lib/gentoo/var/db/repos/gentoo
+          sudo rm --recursive /var/lib/gentoo/var/db/repos/gentoo
           tar --create --directory=/var/lib/gentoo --file=/var/tmp/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*' --xz .
           rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy /var/tmp/$CONFIG_PREFIX.tar.xz :sftp:$CONFIG_PREFIX.tar.xz
