@@ -9,7 +9,7 @@ trap 'error=true' ERR
 emerge-webrsync --revert=$portage_snapshot_date --quiet
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout
-timeout 19800 emerge $1
+timeout 18000 emerge $1
 
 # Exit with status 1 if any command failed during the script execution
 if $error; then
