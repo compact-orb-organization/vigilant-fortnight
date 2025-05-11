@@ -21,10 +21,10 @@ jobs:
       - name: Set up Gentoo environment
         run: |
           # Download, extract, and clean up the Gentoo tarball
-          rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy :sftp:$CONFIG_PREFIX.tar.xz /mnt
+          sudo rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy :sftp:$CONFIG_PREFIX.tar.xz /mnt
           sudo mkdir /mnt/gentoo
           sudo tar --directory=/mnt/gentoo --extract --file=/tmp/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
-          rm /mnt/$CONFIG_PREFIX.tar.xz
+          sudo rm /mnt/$CONFIG_PREFIX.tar.xz
 
       - name: Chroot and run emerge.sh
         run: |
@@ -38,5 +38,5 @@ jobs:
           # Create a tarball of the Gentoo environment
           sudo rm --recursive /mnt/gentoo/var/cache/distfiles/*
           sudo rm --recursive /mnt/gentoo/var/db/repos/gentoo
-          tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*' --xz .
-          rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy /mnt/$CONFIG_PREFIX.tar.xz :sftp:$CONFIG_PREFIX.tar.xz
+          sudo tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*' --xz .
+          sudo rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy /mnt/$CONFIG_PREFIX.tar.xz :sftp:$CONFIG_PREFIX.tar.xz
