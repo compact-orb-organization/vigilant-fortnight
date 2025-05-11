@@ -4,8 +4,11 @@ on:
   workflow_dispatch:
 
 env:
+  ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 2
   EMERGE_PARAMETERS: --deep @installed
+  STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
+  STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
 
 jobs:
   emerge:
@@ -15,48 +18,62 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get --quiet update
-          sudo apt-get --quiet install rclone
+          sudo bash -e -c '
+            apt-get --quiet update
+            apt-get --quiet install aria2
+          '
 
       - name: Set up Gentoo environment
         run: |
-          # Download, extract, and clean up the Gentoo tarball
-          sudo rclone --sftp-disable-concurrent-reads --sftp-disable-concurrent-writes --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy :sftp:$CONFIG_PREFIX.tar.xz /mnt
-          sudo mkdir /mnt/gentoo
-          sudo tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
-          sudo rm /mnt/$CONFIG_PREFIX.tar.xz
+          sudo bash -e -c '
+            # Download, extract, and clean up the Gentoo tarball
+            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.xz
+            mkdir /mnt/gentoo
+            tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*"
+            rm /mnt/$CONFIG_PREFIX.tar.xz
+          '
 
       - name: Mount filesystems
         run: |
-          sudo mount --types proc /proc /mnt/gentoo/proc
-          sudo mount --rbind /sys /mnt/gentoo/sys
-          sudo mount --make-rslave /mnt/gentoo/sys
-          sudo mount --rbind /dev /mnt/gentoo/dev
-          sudo mount --make-rslave /mnt/gentoo/dev
-          sudo mount --bind /run /mnt/gentoo/run
-          sudo mount --make-slave /mnt/gentoo/run
+          sudo bash -e -c '
+            mount --types proc /proc /mnt/gentoo/proc
+            mount --rbind /sys /mnt/gentoo/sys
+            mount --make-rslave /mnt/gentoo/sys
+            mount --rbind /dev /mnt/gentoo/dev
+            mount --make-rslave /mnt/gentoo/dev
+            mount --bind /run /mnt/gentoo/run
+            mount --make-slave /mnt/gentoo/run
+          '
 
       - name: Chroot and run emerge.sh
         run: |
-          sudo cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
-          sudo chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
-          sudo rm --recursive /mnt/gentoo/tmp/*
+          sudo bash -e -c '
+            cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
+            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
+            rm --recursive /mnt/gentoo/tmp/*
+          '
 
       - name: Upload binary packages
         run: |
-          sudo rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy /mnt/gentoo/var/cache/binpkgs/ :sftp:$CONFIG_PREFIX
-          sudo rm --recursive /mnt/gentoo/var/cache/binpkgs/*
+          sudo bash -e -c '
+            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs /$CONFIG_PREFIX
+            rm --recursive /mnt/gentoo/var/cache/binpkgs/*
+          '
 
       - name: Unmount filesystems
         if: always()
         run: |
-          sudo umount --lazy /mnt/gentoo/{dev,proc,run,sys}
+          sudo bash -e -c '
+            umount --lazy /mnt/gentoo/{dev,proc,run,sys}
+          '
 
       - name : Upload Gentoo tarball
         if: always()
         run: |
-          # Create a tarball of the Gentoo environment
-          sudo rm --recursive /mnt/gentoo/var/cache/distfiles/*
-          sudo rm --recursive /mnt/gentoo/var/db/repos/gentoo
-          sudo tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*' --xz .
-          sudo rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy /mnt/$CONFIG_PREFIX.tar.xz :sftp:
+          sudo bash -e -c '
+            # Create a tarball of the Gentoo environment
+            rm --recursive /mnt/gentoo/var/cache/distfiles/*
+            rm --recursive /mnt/gentoo/var/db/repos/gentoo
+            tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz .
+            curl --data-binary @/mnt/$CONFIG_PREFIX.tar.xz --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --request PUT --silent --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.xz
+          '
