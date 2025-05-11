@@ -1,7 +1,17 @@
 # Find all files (-type f) in the source directory ($1) and print their paths.
 find "$1" -type f -print | (
   # Read each file path line by line.
+  MAX_JOBS=100
+  job_count=0
+
   while IFS= read -r file; do
+    # If the maximum number of jobs are running, wait for one to finish.
+    if [ "$job_count" -ge "$MAX_JOBS" ]; then
+      wait -n # Waits for any single job to complete
+
+      job_count=$((job_count - 1))
+    fi
+
     # Extract the filename relative to the source directory.
     # This will preserve the subdirectory structure on the server.
     filename_on_server="${file#$1/}"
@@ -30,6 +40,8 @@ find "$1" -type f -print | (
         attempt=$((attempt + 1))
       done
     ) & # Run the subshell in the background.
+
+    job_count=$((job_count + 1)) # Increment active job count
   done
 
   # Wait for all background upload processes to complete.
