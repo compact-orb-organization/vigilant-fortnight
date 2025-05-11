@@ -18,7 +18,7 @@ jobs:
 
       - name: Set up Gentoo environment
         run: |
-          sudo bash -e -c '
+          sudo --preserve-env bash -e -c '
             # Download, extract, and clean up the Gentoo tarball
             aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.xz
             mkdir /mnt/gentoo
@@ -28,7 +28,7 @@ jobs:
 
       - name: Mount filesystems
         run: |
-          sudo bash -e -c '
+          sudo --preserve-env bash -e -c '
             mount --types proc /proc /mnt/gentoo/proc
             mount --rbind /sys /mnt/gentoo/sys
             mount --make-rslave /mnt/gentoo/sys
@@ -40,7 +40,7 @@ jobs:
 
       - name: Chroot and run emerge.sh
         run: |
-          sudo bash -e -c '
+          sudo --preserve-env bash -e -c '
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
             chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
             rm --recursive /mnt/gentoo/tmp/*
@@ -49,14 +49,14 @@ jobs:
       - name: Unmount filesystems
         if: always()
         run: |
-          sudo bash -e -c '
+          sudo --preserve-env bash -e -c '
             umount --lazy /mnt/gentoo/{dev,proc,run,sys}
           '
 
       - name : Upload Gentoo tarball
         if: always()
         run: |
-          sudo bash -e -c '
+          sudo --preserve-env bash -e -c '
             # Create a tarball of the Gentoo environment
             rm --recursive /mnt/gentoo/var/cache/distfiles/*
             rm --recursive /mnt/gentoo/var/db/repos/gentoo
