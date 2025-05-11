@@ -18,7 +18,7 @@ jobs:
 
       - name: Set up Gentoo environment
         run: |
-          sudo bash -e -c '
+          sudo --preserve-env bash -e -c '
             # Download, extract, and clean up the Gentoo tarball
             aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.xz
             mkdir /mnt/gentoo
