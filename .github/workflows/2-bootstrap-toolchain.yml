@@ -16,13 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo bash -e -c '
-            apt-get --quiet update
-            apt-get --quiet install aria2
-          '
-
       - name: Set up Gentoo environment
         run: |
           sudo bash -e -c '
