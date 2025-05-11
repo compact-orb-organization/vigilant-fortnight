@@ -51,11 +51,11 @@ jobs:
             cp  /etc/resolv.conf /mnt/gentoo/etc
           '
 
-      - name: Chroot and run emerge-first.sh
+      - name: Chroot and run emerge.sh
         run: |
           sudo --preserve-env bash -e -c '
-            cp ./$CONFIG_PREFIX/emerge-first.sh /mnt/gentoo/tmp
-            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge-first.sh "$EMERGE_PARAMETERS"
+            cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
+            chroot /mnt/gentoo /usr/bin/bash -e /tmp/emerge.sh "$EMERGE_PARAMETERS" first
             rm --recursive /mnt/gentoo/tmp/*
           '
 
