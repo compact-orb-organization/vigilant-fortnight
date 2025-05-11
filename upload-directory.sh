@@ -1,12 +1,11 @@
 # Find all files (-type f) in the source directory ($1) and print their paths.
 find "$1" -type f -print | (
   # Read each file path line by line.
-  MAX_JOBS=100
   job_count=0
 
   while IFS= read -r file; do
     # If the maximum number of jobs are running, wait for one to finish.
-    if [ "$job_count" -ge "$MAX_JOBS" ]; then
+    if [ $job_count -ge 100 ]; then
       wait -n # Waits for any single job to complete
 
       job_count=$((job_count - 1))
