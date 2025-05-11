@@ -21,7 +21,7 @@ jobs:
       - name: Set up Gentoo environment
         run: |
           # Download, extract, and clean up the Gentoo tarball
-          sudo rclone --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy :sftp:$CONFIG_PREFIX.tar.xz /mnt
+          sudo rclone --sftp-disable-concurrent-reads --sftp-disable-concurrent-writes --sftp-host ${{ secrets.RCLONE_SFTP_HOST }} --sftp-pass ${{ secrets.RCLONE_SFTP_PASS }} --sftp-user ${{ secrets.RCLONE_SFTP_USER }} copy :sftp:$CONFIG_PREFIX.tar.xz /mnt
           sudo mkdir /mnt/gentoo
           sudo tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
           sudo rm /mnt/$CONFIG_PREFIX.tar.xz
