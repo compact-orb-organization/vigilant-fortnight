@@ -26,11 +26,28 @@ jobs:
           sudo tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include='*.*'
           sudo rm /mnt/$CONFIG_PREFIX.tar.xz
 
+      - name: Mount filesystems
+        run: |
+          sudo mount --types proc /proc /var/lib/gentoo/proc
+          sudo mount --rbind /sys /var/lib/gentoo/sys
+          sudo mount --make-rslave /var/lib/gentoo/sys
+          sudo mount --rbind /dev /var/lib/gentoo/dev
+          sudo mount --make-rslave /var/lib/gentoo/dev
+          sudo mount --bind /run /var/lib/gentoo/run
+          sudo mount --make-slave /var/lib/gentoo/run
+
       - name: Chroot and run emerge.sh
         run: |
           sudo cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
           sudo chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
           sudo rm --recursive /mnt/gentoo/tmp/*
+
+      - name: Unmount filesystems
+        if: always()
+        run: |
+          sudo umount --lazy /var/lib/gentoo/dev{/shm,/pts}
+          sudo umount --lazy /var/lib/gentoo/tmp
+          sudo umount /var/lib/gentoo/{dev,proc,run,sys}
 
       - name : Upload Gentoo tarball
         if: always()
