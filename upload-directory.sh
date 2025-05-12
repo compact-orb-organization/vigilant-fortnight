@@ -1,7 +1,5 @@
 #!/usr/bin/bash
 
-set -eo pipefail
-
 # Find all files (-type f) in the source directory ($1) and print their paths.
 find "$1" -type f -print | (
     # Read each file path line by line.
@@ -21,6 +19,7 @@ find "$1" -type f -print | (
         # Start a subshell for each file to enable parallel uploads.
         (
             attempt=1
+
             # Retry up to 3 times.
             while [ $attempt -le 3 ]; do
                 # Perform the upload using curl.

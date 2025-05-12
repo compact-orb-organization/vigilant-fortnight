@@ -1,7 +1,5 @@
 #!/usr/bin/bash
 
-set -eo pipefail
-
 # Recursively lists files and directories from the storage.
 list_files() {
     # List files in the current directory.
@@ -22,8 +20,25 @@ list_files() {
 
             # Recursively list files in the subdirectory in the background.
             (
-                # Fetch directory contents and call list_files.
-                list_files "$(curl --request GET --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$directory/" --header "AccessKey: $ACCESS_KEY" --silent)" $directory
+                local attempt=1
+
+                # Retry up to 3 times.
+                while [ $attempt -le 3 ]; do
+                    # Fetch directory contents.
+                    local request=$(curl --header "AccessKey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$directory/")
+
+                    # Check if curl command was successful.
+                    if [ "$?" -eq 0 ]; then
+                        list_files "$request" $directory
+
+                        break
+                    else
+                        # If not the last attempt, wait before retrying.
+                        if [ $attempt -lt 3 ]; then
+                            sleep 2
+                        fi
+                    fi
+                done
             ) &
 
             job_count=$((job_count + 1)) # Increment active job count.
@@ -35,7 +50,25 @@ list_files() {
 
 # Initial call to list_files for the root directory specified by $1.
 # Pipe the output (list of all files) to the download logic.
-list_files "$(curl --request GET --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$1/" --header "AccessKey: $ACCESS_KEY" --silent)" $1 | (
+attempt=1
+
+# Retry up to 3 times.
+while [ $attempt -le 3 ]; do
+    # Fetch directory contents
+    request=$(curl --header "AccessKey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$1/")
+
+    # Check if curl command was successful.
+    if [ "$?" -eq 0 ]; then
+        break
+    else
+        # If not the last attempt, wait before retrying.
+        if [ $attempt -lt 3 ]; then
+            sleep 2
+        fi
+    fi
+done
+
+list_files "$request" $1 | (
     job_count=0 # Counter for active download jobs.
 
     # Process each file path for download.
