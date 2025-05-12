@@ -1,4 +1,4 @@
-name: 2 bootstrap installed resume
+name: 2 Bootstrap Installed Resume
 
 on:
   workflow_dispatch:

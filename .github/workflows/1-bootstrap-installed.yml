@@ -1,4 +1,4 @@
-name: 1 bootstrap installed
+name: 1 Bootstrap Installed
 
 on:
   workflow_dispatch:

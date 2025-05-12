@@ -1,4 +1,4 @@
-name: 2 bootstrap toolchain
+name: 2 Bootstrap Toolchain
 
 on:
   workflow_dispatch:

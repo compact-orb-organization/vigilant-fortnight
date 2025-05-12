@@ -1,4 +1,4 @@
-name: 2 bootstrap toolchain resume
+name: 2 Bootstrap Toolchain Resume
 
 on:
   workflow_dispatch:
