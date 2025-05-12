@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Gentoo environment
+      - name: Setup Gentoo Environment
         run: |
           sudo --preserve-env bash -e -c '
             # Download, extract, and clean up the Gentoo tarball
@@ -26,7 +26,7 @@ jobs:
             rm /mnt/$CONFIG_PREFIX.tar.xz
           '
 
-      - name: Set up binary package cache
+      - name: Setup Binary Package Cache
         run: |
           sudo --preserve-env bash -e -c '
             mkdir /mnt/gentoo/var/cache/binpkgs-lowerdir
@@ -36,7 +36,7 @@ jobs:
             mount --types overlay overlay --options lowerdir=/mnt/gentoo/var/cache/binpkgs-lowerdir,upperdir=/mnt/gentoo/var/cache/binpkgs-upperdir,workdir=/mnt/gentoo/var/cache/binpkgs-workdir /mnt/gentoo/var/cache/binpkgs
           '
 
-      - name: Mount filesystems
+      - name: Mount Filesystems
         run: |
           sudo --preserve-env bash -e -c '
             mount --types proc /proc /mnt/gentoo/proc
@@ -48,7 +48,7 @@ jobs:
             mount --make-slave /mnt/gentoo/run
           '
 
-      - name: Chroot and run emerge.sh
+      - name: Chroot and Run emerge.sh
         run: |
           sudo --preserve-env bash -e -c '
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
@@ -56,7 +56,7 @@ jobs:
             rm --recursive /mnt/gentoo/tmp/*
           '
 
-      - name: Upload binary packages
+      - name: Upload Binary Packages
         run: |
           sudo --preserve-env bash -e -c '
             bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs-upperdir /$CONFIG_PREFIX

@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Gentoo environment
+      - name: Setup Gentoo Environment
         run: |
           sudo --preserve-env bash -e -c '
             # Download, extract, and clean up the Gentoo tarball
@@ -26,7 +26,7 @@ jobs:
             rm /mnt/$CONFIG_PREFIX.tar.xz
           '
 
-      - name: Mount filesystems
+      - name: Mount Filesystems
         run: |
           sudo --preserve-env bash -e -c '
             mount --types proc /proc /mnt/gentoo/proc
@@ -51,7 +51,7 @@ jobs:
             cp  /etc/resolv.conf /mnt/gentoo/etc
           '
 
-      - name: Chroot and run emerge.sh
+      - name: Chroot and Run emerge.sh
         run: |
           sudo --preserve-env bash -e -c '
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
@@ -59,14 +59,14 @@ jobs:
             rm --recursive /mnt/gentoo/tmp/*
           '
 
-      - name: Unmount filesystems
+      - name: Unmount Filesystems
         if: always()
         run: |
           sudo --preserve-env bash -e -c '
             umount --lazy /mnt/gentoo/{dev,proc,run,sys}
           '
 
-      - name : Upload Gentoo tarball
+      - name : Upload Gentoo Archive
         if: always()
         run: |
           sudo --preserve-env bash -e -c '
