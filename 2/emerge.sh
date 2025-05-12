@@ -17,7 +17,7 @@ fi
 emerge-webrsync --revert=$portage_snapshot_date --quiet
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
-timeout 18000 emerge "$1"
+timeout 18000 emerge $1
 
 # Remove orphaned dependencies.
 emerge --depclean
