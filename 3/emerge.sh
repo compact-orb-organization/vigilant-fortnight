@@ -2,11 +2,11 @@
 
 set -eo pipefail
 
-# Soure environment variables.
+# Source environment variables.
 source /tmp/env.sh
 
 # Sync the main Gentoo ebuild repository using emerge-webrsync.
-emerge-webrsync --revert=$portage_snapshot_date --quiet
+emerge-webrsync --revert=$PORTAGE_SNAPSHOT_DATE --quiet
 
 if [ "$2" = first ]; then
     # Generate the specified locales.

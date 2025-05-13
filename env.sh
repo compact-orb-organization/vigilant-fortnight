@@ -1,2 +1,2 @@
 # Set the date for the Portage snapshot.
-portage_snapshot_date=20250511
+PORTAGE_SNAPSHOT_DATE=20250511
