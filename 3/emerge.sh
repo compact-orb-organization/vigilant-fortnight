@@ -2,8 +2,8 @@
 
 set -eo pipefail
 
-# Set the date for the Portage snapshot.
-portage_snapshot_date="20250511"
+# Soure environment variables.
+source /tmp/env.sh
 
 # Sync the main Gentoo ebuild repository using emerge-webrsync.
 emerge-webrsync --revert=$portage_snapshot_date --quiet

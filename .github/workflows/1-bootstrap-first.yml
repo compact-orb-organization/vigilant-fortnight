@@ -54,6 +54,7 @@ jobs:
         run: |
           sudo --preserve-env bash -e -c '
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
+            cp ./env.sh /mnt/gentoo/tmp
             chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS" first
             rm --recursive /mnt/gentoo/tmp/*
           '
