@@ -1,4 +1,4 @@
-name: 1 Bootstrap Toolchain
+name: 1 Bootstrap First
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --deep --emptytree sys-devel/binutils sys-devel/gcc sys-kernel/linux-headers sys-libs/glibc
+  EMERGE_PARAMETERS: --buildpkg=n --emptytree @system
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
 
@@ -23,18 +23,6 @@ jobs:
             mkdir /mnt/gentoo
             tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*"
             rm /mnt/$CONFIG_PREFIX.tar.xz
-          '
-
-      - name: Mount Filesystems
-        run: |
-          sudo --preserve-env bash -e -c '
-            mount --types proc /proc /mnt/gentoo/proc
-            mount --rbind /sys /mnt/gentoo/sys
-            mount --make-rslave /mnt/gentoo/sys
-            mount --rbind /dev /mnt/gentoo/dev
-            mount --make-rslave /mnt/gentoo/dev
-            mount --bind /run /mnt/gentoo/run
-            mount --make-slave /mnt/gentoo/run
 
             # Copy the locale configuration file
             cp ./$CONFIG_PREFIX/locale.gen /mnt/gentoo/etc
@@ -48,6 +36,18 @@ jobs:
 
             # Copy the host'\''s DNS configuration into the chroot
             cp  /etc/resolv.conf /mnt/gentoo/etc
+          '
+
+      - name: Mount Filesystems
+        run: |
+          sudo --preserve-env bash -e -c '
+            mount --types proc /proc /mnt/gentoo/proc
+            mount --rbind /sys /mnt/gentoo/sys
+            mount --make-rslave /mnt/gentoo/sys
+            mount --rbind /dev /mnt/gentoo/dev
+            mount --make-rslave /mnt/gentoo/dev
+            mount --bind /run /mnt/gentoo/run
+            mount --make-slave /mnt/gentoo/run
           '
 
       - name: Chroot and Run emerge.sh

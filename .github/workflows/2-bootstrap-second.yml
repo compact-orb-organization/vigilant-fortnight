@@ -1,4 +1,4 @@
-name: 2 Bootstrap Installed
+name: 2 Bootstrap Second
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 2
-  EMERGE_PARAMETERS: --deep @installed
+  EMERGE_PARAMETERS: --emptytree @installed
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
 

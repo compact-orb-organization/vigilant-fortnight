@@ -1,4 +1,4 @@
-name: 1 Bootstrap Installed
+name: 1 Bootstrap First Resume
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --deep @installed
+  EMERGE_PARAMETERS: --resume
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
 
@@ -43,13 +43,6 @@ jobs:
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
             chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
             rm --recursive /mnt/gentoo/tmp/*
-          '
-
-      - name: Upload Binary Packages
-        run: |
-          sudo --preserve-env bash -e -c '
-            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs /$CONFIG_PREFIX
-            rm --recursive /mnt/gentoo/var/cache/binpkgs/*
           '
 
       - name: Unmount Filesystems

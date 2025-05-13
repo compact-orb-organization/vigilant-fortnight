@@ -1,11 +1,11 @@
-name: 2 Bootstrap Installed Resume
+name: 1 Bootstrap Second Resume
 
 on:
   workflow_dispatch:
 
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
-  CONFIG_PREFIX: 2
+  CONFIG_PREFIX: 1
   EMERGE_PARAMETERS: --resume
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}

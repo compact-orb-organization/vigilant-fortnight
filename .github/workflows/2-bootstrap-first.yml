@@ -1,12 +1,12 @@
-name: 1 Bootstrap Toolchain Resume
+name: 2 Bootstrap First
 
 on:
   workflow_dispatch:
 
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
-  CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --resume
+  CONFIG_PREFIX: 2
+  EMERGE_PARAMETERS: --buildpkg=n --emptytree @system
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
 
@@ -23,6 +23,19 @@ jobs:
             mkdir /mnt/gentoo
             tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*"
             rm /mnt/$CONFIG_PREFIX.tar.xz
+
+            # Copy the locale configuration file
+            cp ./$CONFIG_PREFIX/locale.gen /mnt/gentoo/etc
+
+            # Copy the Portage configuration files
+            cp --recursive ./$CONFIG_PREFIX/portage /mnt/gentoo/etc
+            cp ./$CONFIG_PREFIX/make-emerge.conf /mnt/gentoo/etc/portage/make.conf
+
+            # Remove the default Gentoo binary package host configuration
+            rm /mnt/gentoo/etc/portage/binrepos.conf/gentoobinhost.conf
+
+            # Copy the host'\''s DNS configuration into the chroot
+            cp  /etc/resolv.conf /mnt/gentoo/etc
           '
 
       - name: Mount Filesystems
@@ -41,7 +54,7 @@ jobs:
         run: |
           sudo --preserve-env bash -e -c '
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
-            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
+            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS" first
             rm --recursive /mnt/gentoo/tmp/*
           '
 
