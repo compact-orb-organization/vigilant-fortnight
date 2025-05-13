@@ -73,5 +73,5 @@ jobs:
             rm --recursive /mnt/gentoo/var/cache/distfiles/*
             rm --recursive /mnt/gentoo/var/db/repos/gentoo
             tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz .
-            curl --data-binary @/mnt/$CONFIG_PREFIX.tar.xz --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --request PUT --silent --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.xz
+            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX.tar.xz --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
           '
