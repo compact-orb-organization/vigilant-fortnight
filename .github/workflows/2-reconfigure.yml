@@ -1,4 +1,4 @@
-name: 2 Reconfigure
+name: Unmaintained 2 Reconfigure
 
 on:
   workflow_dispatch:
@@ -70,7 +70,7 @@ jobs:
           sudo --preserve-env bash -e -c '
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
             cp ./env.sh /mnt/gentoo/tmp
-            chroot /mnt/gentoo /usr/bin/env FEATURES="-ccache" /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
+            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
             rm --recursive /mnt/gentoo/var/tmp/*
             rm --recursive /mnt/gentoo/tmp/*
           '

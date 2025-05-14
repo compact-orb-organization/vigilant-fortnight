@@ -14,6 +14,9 @@ if [ "$2" = first ]; then
 
     # Set the system locale.
     eselect --brief locale set 6
+
+    # Emerge ccache
+    FEATURES="-ccache" emerge --buildpkg=n dev-util/ccache
 fi
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
