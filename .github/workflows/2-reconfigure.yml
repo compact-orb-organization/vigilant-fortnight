@@ -43,7 +43,7 @@ jobs:
             cp  /etc/resolv.conf /mnt/gentoo/etc
           '
 
-        - name: Setup Binary Package Cache
+      - name: Setup Binary Package Cache
         run: |
           sudo --preserve-env bash -e -c '
             mkdir /mnt/gentoo/var/cache/binpkgs-lowerdir
@@ -63,4 +63,39 @@ jobs:
             mount --make-rslave /mnt/gentoo/dev
             mount --bind /run /mnt/gentoo/run
             mount --make-slave /mnt/gentoo/run
+          '
+
+      - name: Chroot and Run emerge.sh
+        run: |
+          sudo --preserve-env bash -e -c '
+            cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
+            cp ./env.sh /mnt/gentoo/tmp
+            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
+            rm --recursive /mnt/gentoo/tmp/*
+          '
+
+        - name: Upload Binary Packages
+        run: |
+          sudo --preserve-env bash -e -c '
+            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs-upperdir /$CONFIG_PREFIX
+          '
+
+      - name: Unmount Filesystems
+        if: always()
+        run: |
+          sudo --preserve-env bash -e -c '
+            umount /mnt/gentoo/var/cache/binpkgs
+            umount --lazy /mnt/gentoo/{dev,proc,run,sys}
+          '
+
+      - name : Upload Gentoo Archive
+        if: always()
+        run: |
+          sudo --preserve-env bash -e -c '
+            # Create a tarball of the Gentoo environment
+            rm --recursive /mnt/gentoo/var/cache/{binpkgs-lowerdir,binpkgs-upperdir,binpkgs-workdir}
+            rm --recursive /mnt/gentoo/var/cache/distfiles/*
+            rm --recursive /mnt/gentoo/var/db/repos/gentoo
+            tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz .
+            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX.tar.xz --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
           '
