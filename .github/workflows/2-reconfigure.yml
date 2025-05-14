@@ -42,3 +42,48 @@ jobs:
             # Copy the host'\''s DNS configuration into the chroot
             cp  /etc/resolv.conf /mnt/gentoo/etc
           '
+
+        - name: Setup Binary Package Cache
+        run: |
+          sudo --preserve-env bash -e -c '
+            mkdir /mnt/gentoo/var/cache/binpkgs-lowerdir
+            bash ./download-directory.sh /$CONFIG_PREFIX /mnt/gentoo/var/cache/binpkgs-lowerdir
+            mkdir /mnt/gentoo/var/cache/binpkgs-upperdir
+            mkdir /mnt/gentoo/var/cache/binpkgs-workdir
+            mount --types overlay overlay --options lowerdir=/mnt/gentoo/var/cache/binpkgs-lowerdir,upperdir=/mnt/gentoo/var/cache/binpkgs-upperdir,workdir=/mnt/gentoo/var/cache/binpkgs-workdir /mnt/gentoo/var/cache/binpkgs
+          '
+
+      - name: Mount Filesystems
+        run: |
+          sudo --preserve-env bash -e -c '
+            mount --types proc /proc /mnt/gentoo/proc
+            mount --rbind /sys /mnt/gentoo/sys
+            mount --make-rslave /mnt/gentoo/sys
+            mount --rbind /dev /mnt/gentoo/dev
+            mount --make-rslave /mnt/gentoo/dev
+            mount --bind /run /mnt/gentoo/run
+            mount --make-slave /mnt/gentoo/run
+          '
+
+      - name: Chroot and Run emerge.sh
+        run: |
+          sudo --preserve-env bash -e -c '
+            cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
+            cp ./env.sh /mnt/gentoo/tmp
+            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
+            rm --recursive /mnt/gentoo/tmp/*
+          '
+
+        - name: Upload Binary Packages
+        run: |
+          sudo --preserve-env bash -e -c '
+            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs-upperdir /$CONFIG_PREFIX
+          '
+
+      - name: Unmount Filesystems
+        if: always()
+        run: |
+          sudo --preserve-env bash -e -c '
+            umount /mnt/gentoo/var/cache/binpkgs
+            umount --lazy /mnt/gentoo/{dev,proc,run,sys}
+          '
