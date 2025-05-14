@@ -1,12 +1,12 @@
-name: 2 Bootstrap First
+name: 1 Reconfigure
 
 on:
   workflow_dispatch:
 
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
-  CONFIG_PREFIX: 2
-  EMERGE_PARAMETERS: --buildpkg=n --emptytree @system
+  CONFIG_PREFIX: 1
+  EMERGE_PARAMETERS: dev-util/ccache
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
 
@@ -28,17 +28,29 @@ jobs:
             cp ./$CONFIG_PREFIX/locale.gen /mnt/gentoo/etc
 
             # Copy the Portage configuration files
+            rm /mnt/gentoo/etc/portage/env
+            if [ -e /mnt/gentoo/etc/portage/package.env ]; then
+              rm /mnt/gentoo/etc/portage/package.env
+            fi
+            rm /mnt/gentoo/etc/portage/package.use
             cp --recursive ./$CONFIG_PREFIX/portage /mnt/gentoo/etc
             cp ./$CONFIG_PREFIX/make-emerge.conf /mnt/gentoo/etc/portage/make.conf
-
-            # Remove the default Gentoo binary package host configuration
-            rm /mnt/gentoo/etc/portage/binrepos.conf/gentoobinhost.conf
 
             # Copy the ccache configuration file
             cp ./$CONFIG_PREFIX/ccache.conf /mnt/gentoo/etc
 
             # Copy the host'\''s DNS configuration into the chroot
             cp  /etc/resolv.conf /mnt/gentoo/etc
+          '
+
+        - name: Setup Binary Package Cache
+        run: |
+          sudo --preserve-env bash -e -c '
+            mkdir /mnt/gentoo/var/cache/binpkgs-lowerdir
+            bash ./download-directory.sh /$CONFIG_PREFIX /mnt/gentoo/var/cache/binpkgs-lowerdir
+            mkdir /mnt/gentoo/var/cache/binpkgs-upperdir
+            mkdir /mnt/gentoo/var/cache/binpkgs-workdir
+            mount --types overlay overlay --options lowerdir=/mnt/gentoo/var/cache/binpkgs-lowerdir,upperdir=/mnt/gentoo/var/cache/binpkgs-upperdir,workdir=/mnt/gentoo/var/cache/binpkgs-workdir /mnt/gentoo/var/cache/binpkgs
           '
 
       - name: Mount Filesystems
@@ -58,14 +70,21 @@ jobs:
           sudo --preserve-env bash -e -c '
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
             cp ./env.sh /mnt/gentoo/tmp
-            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS" first
+            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
             rm --recursive /mnt/gentoo/tmp/*
+          '
+
+        - name: Upload Binary Packages
+        run: |
+          sudo --preserve-env bash -e -c '
+            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs-upperdir /$CONFIG_PREFIX
           '
 
       - name: Unmount Filesystems
         if: always()
         run: |
           sudo --preserve-env bash -e -c '
+            umount /mnt/gentoo/var/cache/binpkgs
             umount --lazy /mnt/gentoo/{dev,proc,run,sys}
           '
 
@@ -74,6 +93,7 @@ jobs:
         run: |
           sudo --preserve-env bash -e -c '
             # Create a tarball of the Gentoo environment
+            rm --recursive /mnt/gentoo/var/cache/{binpkgs-lowerdir,binpkgs-upperdir,binpkgs-workdir}
             rm --recursive /mnt/gentoo/var/cache/distfiles/*
             rm --recursive /mnt/gentoo/var/db/repos/gentoo
             tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*" --xz .
