@@ -29,9 +29,6 @@ jobs:
 
             # Copy the Portage configuration files
             rm /mnt/gentoo/etc/portage/env
-            if [ -e /mnt/gentoo/etc/portage/package.env ]; then
-              rm /mnt/gentoo/etc/portage/package.env
-            fi
             rm /mnt/gentoo/etc/portage/package.use
             cp --recursive ./$CONFIG_PREFIX/portage /mnt/gentoo/etc
             cp ./$CONFIG_PREFIX/make-emerge.conf /mnt/gentoo/etc/portage/make.conf
