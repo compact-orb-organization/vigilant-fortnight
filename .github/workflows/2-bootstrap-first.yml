@@ -59,6 +59,7 @@ jobs:
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
             cp ./env.sh /mnt/gentoo/tmp
             chroot /mnt/gentoo /usr/bin/env FEATURES="-ccache" /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS" first
+            rm --recursive /mnt/gentoo/var/tmp/*
             rm --recursive /mnt/gentoo/tmp/*
           '
 
