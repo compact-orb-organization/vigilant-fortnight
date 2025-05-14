@@ -74,7 +74,7 @@ jobs:
             rm --recursive /mnt/gentoo/tmp/*
           '
 
-        - name: Upload Binary Packages
+      - name: Upload Binary Packages
         run: |
           sudo --preserve-env bash -e -c '
             bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs-upperdir /$CONFIG_PREFIX
