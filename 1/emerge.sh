@@ -23,7 +23,7 @@ if [ "$2" = first ]; then
 fi
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
-timeout 18000 emerge $1
+timeout 16200 emerge $1
 
 # Remove orphaned dependencies.
 emerge --depclean
