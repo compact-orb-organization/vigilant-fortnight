@@ -21,8 +21,8 @@ jobs:
           sudo --preserve-env bash -e -c '
             aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.xz
             mkdir /mnt/gentoo
-            tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*"
-            rm /mnt/$CONFIG_PREFIX.tar.xz
+            tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.zstd --numeric-owner --preserve-permissions --xattrs-include="*.*"
+            rm /mnt/$CONFIG_PREFIX.tar.zstd
           '
 
       - name: Mount Filesystems
