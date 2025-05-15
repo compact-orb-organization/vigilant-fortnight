@@ -19,10 +19,10 @@ jobs:
       - name: Setup Gentoo Environment
         run: |
           sudo --preserve-env bash -e -c '
-            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.xz
+            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.zstd
             mkdir /mnt/gentoo
-            tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*"
-            rm /mnt/$CONFIG_PREFIX.tar.xz
+            tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.zstd --numeric-owner --preserve-permissions --xattrs-include="*.*"
+            rm /mnt/$CONFIG_PREFIX.tar.zstd
 
             # Copy the locale configuration file
             # cp ./$CONFIG_PREFIX/locale.gen /mnt/gentoo/etc
