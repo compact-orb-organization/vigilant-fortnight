@@ -19,10 +19,10 @@ jobs:
       - name: Setup Gentoo Environment
         run: |
           sudo --preserve-env bash -e -c '
-            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.zstd
+            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.zst
             mkdir /mnt/gentoo
-            tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.zstd --numeric-owner --preserve-permissions --xattrs-include="*.*"
-            rm /mnt/$CONFIG_PREFIX.tar.zstd
+            tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.zst --numeric-owner --preserve-permissions --xattrs-include="*.*"
+            rm /mnt/$CONFIG_PREFIX.tar.zst
           '
 
       - name: Mount Filesystems
@@ -68,7 +68,7 @@ jobs:
             # Create a tarball of the Gentoo environment
             rm --recursive /mnt/gentoo/var/cache/distfiles/*
             rm --recursive /mnt/gentoo/var/db/repos/gentoo
-            tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.zstd --numeric-owner --preserve-permissions --use-compress-program="zstd -T8 --fast" --xattrs-include="*.*" .
+            tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.zst --numeric-owner --preserve-permissions --use-compress-program="zstd -T8 --fast" --xattrs-include="*.*" .
             echo "Gentoo archive created"
-            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX.tar.zstd --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
+            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX.tar.zst --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
           '
