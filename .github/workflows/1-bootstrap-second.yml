@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --emptytree @installed
+  EMERGE_PARAMETERS: --emptytree @world
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
 
