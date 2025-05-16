@@ -21,7 +21,7 @@ jobs:
           sudo --preserve-env bash -e -c '
             aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.zst
             mkdir /mnt/gentoo
-            tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX.tar.zst --numeric-owner --preserve-permissions --xattrs-include="*.*"
+            zstd --decompress --long=31 --to-stdout /mnt/$CONFIG_PREFIX.tar.zst | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
             rm /mnt/$CONFIG_PREFIX.tar.zst
           '
 
