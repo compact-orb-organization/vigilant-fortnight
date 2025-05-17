@@ -1,4 +1,4 @@
-name: 1 Resume
+name: 1 Update
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --resume
+  EMERGE_PARAMETERS: --deep --newuse --update @world
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
 
@@ -19,10 +19,10 @@ jobs:
       - name: Setup Gentoo Environment
         run: |
           sudo --preserve-env bash -e -c '
-            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX-temporary.tar.zst
+            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.zst
             mkdir /mnt/gentoo
-            zstd --decompress --long=31 --stdout /mnt/$CONFIG_PREFIX-temporary.tar.zst | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
-            rm /mnt/$CONFIG_PREFIX-temporary.tar.zst
+            zstd --decompress --long=31 --stdout /mnt/$CONFIG_PREFIX.tar.zst | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
+            rm /mnt/$CONFIG_PREFIX.tar.zst
           '
 
       - name: Setup Binary Package Cache
@@ -57,12 +57,6 @@ jobs:
             rm --recursive /mnt/gentoo/tmp/*
           '
 
-      - name: Delete Temporary Gentoo Archive
-        run: |
-          sudo --preserve-env bash -e -c '
-            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request DELETE --silent --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX-temporary.tar.zst"
-          '
-
       - name: Upload Binary Packages
         if: always()
         run: |
@@ -80,20 +74,20 @@ jobs:
           '
 
       - name: Unmount Filesystems
-        if: failure()
+        if: always()
         run: |
           sudo --preserve-env bash -e -c '
             umount --lazy /mnt/gentoo/{dev,proc,run,sys}
           '
 
       - name : Upload Gentoo Archive
-        if: failure()
+        if: always()
         run: |
           sudo --preserve-env bash -e -c '
             # Create a tarball of the Gentoo environment
             rm --recursive /mnt/gentoo/var/cache/distfiles/*
             rm --recursive /mnt/gentoo/var/db/repos/gentoo
-            tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX-temporary.tar.zst --numeric-owner --preserve-permissions --use-compress-program="zstd -T8 --fast --long=31" --xattrs-include="*.*" .
+            tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.zst --numeric-owner --preserve-permissions --use-compress-program="zstd -T8 --fast --long=31" --xattrs-include="*.*" .
             echo "Gentoo archive created"
-            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX-temporary.tar.zst --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
+            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX.tar.zst --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
           '
