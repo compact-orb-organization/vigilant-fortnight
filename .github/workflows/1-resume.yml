@@ -57,6 +57,12 @@ jobs:
             rm --recursive /mnt/gentoo/tmp/*
           '
 
+      - name: Delete Temporary Gentoo Archive
+        run: |
+          sudo --preserve-env bash -e -c '
+            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request DELETE --silent --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX-temporary.tar.zst"
+          '
+
       - name: Upload Binary Packages
         run: |
           sudo --preserve-env bash -e -c '
