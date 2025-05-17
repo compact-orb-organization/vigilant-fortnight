@@ -25,16 +25,6 @@ jobs:
             rm /mnt/$CONFIG_PREFIX-temporary.tar.zst
           '
 
-      - name: Setup Binary Package Cache
-        run: |
-          sudo --preserve-env bash -e -c '
-            mkdir /mnt/gentoo/var/cache/binpkgs-lowerdir
-            bash ./download-directory.sh /$CONFIG_PREFIX /mnt/gentoo/var/cache/binpkgs-lowerdir
-            mkdir /mnt/gentoo/var/cache/binpkgs-upperdir
-            mkdir /mnt/gentoo/var/cache/binpkgs-workdir
-            mount --types overlay overlay --options lowerdir=/mnt/gentoo/var/cache/binpkgs-lowerdir,upperdir=/mnt/gentoo/var/cache/binpkgs-upperdir,workdir=/mnt/gentoo/var/cache/binpkgs-workdir /mnt/gentoo/var/cache/binpkgs
-          '
-
       - name: Mount Filesystems
         run: |
           sudo --preserve-env bash -e -c '
