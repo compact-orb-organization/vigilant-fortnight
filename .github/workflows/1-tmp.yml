@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --use-binpkg=n gnome-extra/gnome-system-monitor
+  EMERGE_PARAMETERS: --usepkg-exclude gnome-extra/gnome-system-monitor gnome-extra/gnome-system-monitor
   STORAGE_ENDPOINT_DOWN: ${{ secrets.STORAGE_ENDPOINT_DOWN }}
   STORAGE_ENDPOINT_UP: ${{ secrets.STORAGE_ENDPOINT_UP }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
