@@ -24,7 +24,7 @@ find "$1" -type f -print | (
             while [ $attempt -le 3 ]; do
                 # Perform the upload using curl.
                 # Use filename_on_server to construct the correct target path.
-                http_status=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --output /dev/null --silent --upload-file "$file" --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$2/$filename_on_server" --write-out %{http_code})
+                http_status=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --output /dev/null --silent --upload-file "$file" --url "https://$STORAGE_ENDPOINT_UP/$STORAGE_ZONE_NAME$2/$filename_on_server" --write-out %{http_code})
 
                 # Check if curl command was successful and HTTP status is 2xx.
                 if [ "$?" -eq 0 ] && [ "$http_status" -ge 200 ] && [ "$http_status" -lt 300 ]; then

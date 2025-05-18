@@ -25,7 +25,7 @@ list_files() {
                 # Retry up to 3 times.
                 while [ $attempt -le 3 ]; do
                     # Fetch directory contents.
-                    local request=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$directory/")
+                    local request=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT_UP/$STORAGE_ZONE_NAME$directory/")
 
                     # Check if curl command was successful.
                     if [ "$?" -eq 0 ]; then
@@ -55,7 +55,7 @@ attempt=1
 # Retry up to 3 times.
 while [ $attempt -le 3 ]; do
     # Fetch directory contents
-    request=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$1/")
+    request=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT_UP/$STORAGE_ZONE_NAME$1/")
 
     # Check if curl command was successful.
     if [ "$?" -eq 0 ]; then
@@ -88,7 +88,7 @@ list_files "$request" $1 | (
             # Download the file using aria2c, preserving directory structure.
             # $2 is the local target directory.
             # ${path#$1} removes the initial remote path prefix to create the correct local subdirectory.
-            aria2c --dir=$2${path#$1} --header="accesskey: $ACCESS_KEY" --header="accept: */*" --quiet https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$file
+            aria2c --dir=$2${path#$1} --header="accesskey: $ACCESS_KEY" --header="accept: */*" --quiet https://$STORAGE_ENDPOINT_DOWN/$STORAGE_ZONE_NAME$file
         ) &
 
         job_count=$((job_count + 1)) # Increment active job count.
