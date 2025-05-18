@@ -7,8 +7,7 @@ env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
   EMERGE_PARAMETERS: --buildpkg=n --emptytree @system
-  STORAGE_ENDPOINT_DOWN: ${{ secrets.STORAGE_ENDPOINT_DOWN }}
-  STORAGE_ENDPOINT_UP: ${{ secrets.STORAGE_ENDPOINT_UP }}
+  STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
 
 jobs:
