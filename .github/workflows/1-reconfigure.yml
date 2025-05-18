@@ -33,6 +33,9 @@ jobs:
               rm --recursive /mnt/gentoo/etc/portage/package.env
             fi
             rm --recursive /mnt/gentoo/etc/portage/package.use
+            if [ -e /mnt/gentoo/etc/portage/package.mask ]; then
+              rm --recursive /mnt/gentoo/etc/portage/package.mask
+            fi
             cp --recursive ./$CONFIG_PREFIX/portage /mnt/gentoo/etc
             cp ./$CONFIG_PREFIX/make-emerge.conf /mnt/gentoo/etc/portage/make.conf
 
