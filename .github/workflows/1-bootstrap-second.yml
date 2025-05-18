@@ -56,14 +56,14 @@ jobs:
           '
 
       - name: Unmount Filesystems
-        if: always()
+        if: success() || failure()
         run: |
           sudo --preserve-env bash -e -c '
             umount --lazy /mnt/gentoo/{dev,proc,run,sys}
           '
 
       - name : Upload Gentoo Archive
-        if: always()
+        if: success() || failure()
         run: |
           sudo --preserve-env bash -e -c '
             # Create a tarball of the Gentoo environment

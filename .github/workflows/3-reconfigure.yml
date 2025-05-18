@@ -82,7 +82,7 @@ jobs:
 #          '
 
 #      - name: Unmount Filesystems
-#        if: always()
+#        if: success() || failure()
 #        run: |
 #          sudo --preserve-env bash -e -c '
 #            umount /mnt/gentoo/var/cache/binpkgs
@@ -90,7 +90,7 @@ jobs:
 #          '
 
       - name : Upload Gentoo Archive
-        if: always()
+        if: success() || failure()
         run: |
           sudo --preserve-env bash -e -c '
             # Create a tarball of the Gentoo environment
