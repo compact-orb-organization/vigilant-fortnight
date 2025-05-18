@@ -6,7 +6,8 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --usepkg-exclude gnome-extra/gnome-system-monitor gnome-extra/gnome-system-monitor
+#  EMERGE_PARAMETERS: --usepkg-exclude gnome-extra/gnome-system-monitor gnome-extra/gnome-system-monitor
+  EMERGE_PARAMETERS: --usepkg-exclude dev-lang/ruby dev-lang/ruby
   STORAGE_ENDPOINT_DOWN: ${{ secrets.STORAGE_ENDPOINT_DOWN }}
   STORAGE_ENDPOINT_UP: ${{ secrets.STORAGE_ENDPOINT_UP }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
