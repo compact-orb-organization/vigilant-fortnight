@@ -20,7 +20,7 @@ jobs:
       - name: Setup Gentoo Environment
         run: |
           sudo --preserve-env bash -e -c '
-            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.zst
+            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT_DOWN/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.zst
             mkdir /mnt/gentoo
             zstd --decompress --long=31 --stdout /mnt/$CONFIG_PREFIX.tar.zst | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
             rm /mnt/$CONFIG_PREFIX.tar.zst
