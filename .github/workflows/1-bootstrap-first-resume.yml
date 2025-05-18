@@ -63,5 +63,5 @@ jobs:
             rm --recursive /mnt/gentoo/var/db/repos/gentoo
             tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.zst --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
             echo "Gentoo archive created"
-            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX.tar.zst --url https://$STORAGE_ENDPOINT_UP/$STORAGE_ZONE_NAME/
+            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX.tar.zst --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
           '
