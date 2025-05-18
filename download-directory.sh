@@ -88,7 +88,7 @@ list_files "$request" $1 | (
             # Download the file using aria2c, preserving directory structure.
             # $2 is the local target directory.
             # ${path#$1} removes the initial remote path prefix to create the correct local subdirectory.
-            aria2c --dir=$2${path#$1} --header="accesskey: $ACCESS_KEY" --header="accept: */*" --quiet https://$STORAGE_ENDPOINT_DOWN/$STORAGE_ZONE_NAME$file
+            aria2c --dir=$2${path#$1} --header="accesskey: $ACCESS_KEY" --header="accept: */*" --quiet https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$file
         ) &
 
         job_count=$((job_count + 1)) # Increment active job count.
