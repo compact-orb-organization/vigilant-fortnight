@@ -1,11 +1,11 @@
-name: 1 Resume
+name: 2 Resume
 
 on:
   workflow_dispatch:
 
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
-  CONFIG_PREFIX: 1
+  CONFIG_PREFIX: 2
   EMERGE_PARAMETERS: --keep-going --resume
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ENDPOINT_CDN: ${{ secrets.STORAGE_ENDPOINT_CDN }}
