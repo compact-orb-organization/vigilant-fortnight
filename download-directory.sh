@@ -12,7 +12,7 @@ list_files() {
         # Process each directory.
         while IFS= read -r directory; do
             # Limit parallel directory listing jobs.
-            if [ $job_count -ge 50 ]; then
+            if [ $job_count -ge 25 ]; then
                 wait -n # Wait for any single job to complete.
 
                 job_count=$((job_count - 1))
@@ -74,7 +74,7 @@ list_files "$request" $1 | (
     # Process each file path for download.
     while IFS= read -r file; do
         # Limit parallel download jobs.
-        if [ $job_count -ge 50 ]; then
+        if [ $job_count -ge 25 ]; then
                 wait -n # Wait for any single job to complete.
 
                 job_count=$((job_count - 1))
