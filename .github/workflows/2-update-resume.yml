@@ -1,0 +1,93 @@
+name: 2 Update Resume
+
+on:
+  workflow_dispatch:
+
+env:
+  ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+  CONFIG_PREFIX: 2
+  EMERGE_PARAMETERS: --keep-going --resume
+  STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
+  STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
+
+jobs:
+  emerge:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Gentoo Environment
+        run: |
+          sudo --preserve-env bash -e -c '
+            aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/$CONFIG_PREFIX.tar.zst
+            mkdir /mnt/gentoo
+            zstd --decompress --long=31 --stdout /mnt/$CONFIG_PREFIX.tar.zst | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
+            rm /mnt/$CONFIG_PREFIX.tar.zst
+          '
+
+      - name: Setup Binary Package Cache
+        run: |
+          sudo --preserve-env bash -e -c '
+            mkdir /mnt/gentoo/var/cache/binpkgs-lowerdir
+            bash ./download-directory.sh /$CONFIG_PREFIX /mnt/gentoo/var/cache/binpkgs-lowerdir
+            mkdir /mnt/gentoo/var/cache/binpkgs-upperdir
+            mkdir /mnt/gentoo/var/cache/binpkgs-workdir
+            mount --types overlay overlay --options lowerdir=/mnt/gentoo/var/cache/binpkgs-lowerdir,upperdir=/mnt/gentoo/var/cache/binpkgs-upperdir,workdir=/mnt/gentoo/var/cache/binpkgs-workdir /mnt/gentoo/var/cache/binpkgs
+          '
+
+      - name: Mount Filesystems
+        run: |
+          sudo --preserve-env bash -e -c '
+            mount --types proc /proc /mnt/gentoo/proc
+            mount --rbind /sys /mnt/gentoo/sys
+            mount --make-rslave /mnt/gentoo/sys
+            mount --rbind /dev /mnt/gentoo/dev
+            mount --make-rslave /mnt/gentoo/dev
+            mount --bind /run /mnt/gentoo/run
+            mount --make-slave /mnt/gentoo/run
+          '
+
+      - name: Chroot and Run emerge.sh
+        run: |
+          sudo --preserve-env bash -e -c '
+            cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
+            cp ./env.sh /mnt/gentoo/tmp
+            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS"
+            rm --recursive /mnt/gentoo/var/tmp/*
+            rm --recursive /mnt/gentoo/tmp/*
+          '
+
+      - name: Upload Binary Packages
+        if: success() || failure()
+        run: |
+          sudo --preserve-env bash -e -c '
+            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs-upperdir /$CONFIG_PREFIX
+            rm --recursive /mnt/gentoo/var/cache/binpkgs/*
+          '
+
+      - name: Remove Binary Packages
+        if: success() || failure()
+        run: |
+          sudo --preserve-env bash -e -c '
+            umount --lazy /mnt/gentoo/var/cache/binpkgs
+            rm --recursive /mnt/gentoo/var/cache/binpkgs-lowerdir /mnt/gentoo/var/cache/binpkgs-upperdir /mnt/gentoo/var/cache/binpkgs-workdir
+          '
+
+      - name: Unmount Filesystems
+        if: success() || failure()
+        run: |
+          sudo --preserve-env bash -e -c '
+            umount --lazy /mnt/gentoo/{dev,proc,run,sys}
+          '
+
+      - name : Upload Gentoo Archive
+        if: success() || failure()
+        run: |
+          sudo --preserve-env bash -e -c '
+            # Create a tarball of the Gentoo environment
+            rm --recursive /mnt/gentoo/var/cache/distfiles/*
+            rm --recursive /mnt/gentoo/var/db/repos/gentoo
+            tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX.tar.zst --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
+            echo "Gentoo archive created"
+            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX.tar.zst --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
+          '
