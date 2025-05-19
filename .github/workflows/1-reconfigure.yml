@@ -22,7 +22,11 @@ jobs:
             mkdir /mnt/gentoo
             zstd --decompress --long=31 --stdout /mnt/$CONFIG_PREFIX.tar.zst | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
             rm /mnt/$CONFIG_PREFIX.tar.zst
+          '
 
+      - name: Configure Gentoo Environment
+        run: |
+          sudo --preserve-env bash -e -c '
             # Copy the locale configuration file
             cp ./$CONFIG_PREFIX/locale.gen /mnt/gentoo/etc
 

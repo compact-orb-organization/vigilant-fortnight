@@ -23,7 +23,11 @@ jobs:
             mkdir /mnt/gentoo
             tar --directory=/mnt/gentoo --extract --file=/mnt/$CONFIG_PREFIX-bootstrap.tar.xz --numeric-owner --preserve-permissions --xattrs-include="*.*"
             rm /mnt/$CONFIG_PREFIX-bootstrap.tar.xz
+          '
 
+      - name: Configure Gentoo Environment
+        run: |
+          sudo --preserve-env bash -e -c '
             # Copy the locale configuration file
             cp ./$CONFIG_PREFIX/locale.gen /mnt/gentoo/etc
 
