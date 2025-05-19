@@ -1,1 +1,1 @@
-net-p2p/qbittorrent -gui webui
+net-p2p/qbittorrent -dbus -gui webui
