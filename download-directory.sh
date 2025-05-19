@@ -25,7 +25,7 @@ list_files() {
                 # Retry up to 3 times.
                 while [ $attempt -le 3 ]; do
                     # Fetch directory contents.
-                    local request=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$directory/")
+                    local request=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT_CDN/$STORAGE_ZONE_NAME$directory/")
 
                     # Check if curl command was successful.
                     if [ "$?" -eq 0 ]; then
@@ -55,7 +55,7 @@ attempt=1
 # Retry up to 3 times.
 while [ $attempt -le 3 ]; do
     # Fetch directory contents
-    request=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$1/")
+    request=$(curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --request GET --silent --url "https://$STORAGE_ENDPOINT_CDN/$STORAGE_ZONE_NAME$1/")
 
     # Check if curl command was successful.
     if [ "$?" -eq 0 ]; then
