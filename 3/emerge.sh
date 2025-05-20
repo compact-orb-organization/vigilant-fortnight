@@ -15,9 +15,9 @@ if [ "$2" = first ]; then
     # Set the system locale.
     eselect --brief locale set 6
 
-    echo "*/* gcc.conf nolto.conf" > /etc/portage/package.env/temporary
+    echo "*/* gcc.conf" > /etc/portage/package.env/temporary
 
-    echo "*/* -lto -pgo" > /etc/portage/package.use/temporary
+    echo "*/* -pgo" > /etc/portage/package.use/temporary
 fi
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
