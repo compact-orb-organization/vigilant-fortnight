@@ -68,7 +68,7 @@ jobs:
       - name: Remove Temporary Environment Variables
         run: |
           sudo --preserve-env bash -e -c '
-            rm /etc/portage/package.env/temporary /etc/portage/package.use/temporary
+            rm /mnt/gentoo/etc/portage/package.env/temporary /mnt/gentoo/etc/portage/package.use/temporary
           '
 
       - name: Unmount Filesystems
