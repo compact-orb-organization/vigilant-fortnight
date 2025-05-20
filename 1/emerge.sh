@@ -18,7 +18,11 @@ if [ "$2" = first ]; then
     # Set the Gentoo profile.
     eselect --brief profile set 26
 
-    ACCEPT_KEYWORDS="-~amd64" emerge llvm-core/clang-common llvm-core/clang-runtime
+    echo "llvm-core/lld gcc.conf" > /etc/portage/package.env/lld
+
+    ACCEPT_KEYWORDS="-~amd64" emerge --oneshot llvm-core/clang-common llvm-core/clang-runtime
+
+    rm /etc/portage/package.env/lld
 fi
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
