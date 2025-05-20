@@ -17,6 +17,8 @@ if [ "$2" = first ]; then
 
     # Set the Gentoo profile.
     eselect --brief profile set 26
+
+    ACCEPT_KEYWORDS="-~amd64" emerge llvm-core/clang-common llvm-core/clang-runtime
 fi
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
