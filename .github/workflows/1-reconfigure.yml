@@ -43,9 +43,6 @@ jobs:
             cp --recursive ./$CONFIG_PREFIX/portage /mnt/gentoo/etc
             cp ./$CONFIG_PREFIX/make-emerge.conf /mnt/gentoo/etc/portage/make.conf
 
-            # Copy the ccache configuration file
-            cp ./$CONFIG_PREFIX/ccache.conf /mnt/gentoo/etc
-
             # Copy the host'\''s DNS configuration into the chroot
             cp  /etc/resolv.conf /mnt/gentoo/etc
           '

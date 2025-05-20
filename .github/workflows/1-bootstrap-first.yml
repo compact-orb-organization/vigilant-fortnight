@@ -39,9 +39,6 @@ jobs:
             # Remove the default Gentoo binary package host configuration
             rm /mnt/gentoo/etc/portage/binrepos.conf/gentoobinhost.conf
 
-            # Copy the ccache configuration file
-            cp ./$CONFIG_PREFIX/ccache.conf /mnt/gentoo/etc
-
             # Copy the host'\''s DNS configuration into the chroot
             cp  /etc/resolv.conf /mnt/gentoo/etc
           '
