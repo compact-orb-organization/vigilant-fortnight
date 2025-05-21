@@ -18,8 +18,6 @@ if [ "$2" = first ]; then
     # Set the Gentoo profile.
     eselect --brief profile set 26
 
-    echo "*/* gcc.conf" > /etc/portage/package.env/temporary
-
     echo "*/* -pgo" > /etc/portage/package.use/temporary
 fi
 

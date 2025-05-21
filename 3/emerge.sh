@@ -15,8 +15,6 @@ if [ "$2" = first ]; then
     # Set the system locale.
     eselect --brief locale set 6
 
-    echo "*/* gcc.conf" > /etc/portage/package.env/temporary
-
     echo "*/* -pgo" > /etc/portage/package.use/temporary
 fi
 
