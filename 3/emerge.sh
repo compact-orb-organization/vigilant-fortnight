@@ -16,6 +16,8 @@ if [ "$2" = first ]; then
     eselect --brief locale set 6
 
     echo "*/* -pgo" > /etc/portage/package.use/temporary
+
+    emerge llvm-core/clang
 fi
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
