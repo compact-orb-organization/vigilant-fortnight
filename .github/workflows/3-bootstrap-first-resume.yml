@@ -48,7 +48,7 @@ jobs:
             rm --recursive /mnt/gentoo/tmp/*
           '
 
-      - name: Remove Temporary Environment Variables
+      - name: Remove Temporary Use Flags
         run: |
           sudo --preserve-env bash -e -c '
             rm /mnt/gentoo/etc/portage/package.use/temporary
