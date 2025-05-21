@@ -13,6 +13,7 @@ env:
 
 jobs:
   emerge:
+    timeout-minutes: 2880
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
