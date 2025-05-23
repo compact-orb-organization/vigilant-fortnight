@@ -22,7 +22,7 @@ if [ "$2" = first ]; then
 
     emerge llvm-core/clang
 
-    emerge dev-lang/perl
+    emerge --oneshot dev-lang/perl
 fi
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
