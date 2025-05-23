@@ -21,6 +21,8 @@ if [ "$2" = first ]; then
     echo "*/* -pgo" > /etc/portage/package.use/temporary
 
     emerge llvm-core/clang
+
+    emerge dev-lang/perl
 fi
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
