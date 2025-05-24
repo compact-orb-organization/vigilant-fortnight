@@ -17,6 +17,8 @@ if [ "$2" = first ]; then
 
     echo "*/* -pgo" > /etc/portage/package.use/temporary
 
+    echo "*/* gcc.conf" > /etc/portage/package.env/temporary
+
     emerge llvm-core/clang
 fi
 

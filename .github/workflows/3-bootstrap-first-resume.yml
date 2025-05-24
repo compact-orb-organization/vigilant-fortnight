@@ -48,10 +48,10 @@ jobs:
             rm --recursive /mnt/gentoo/tmp/*
           '
 
-      - name: Remove Temporary Use Flags
+      - name: Remove Temporary Use Flags and Environment Variables
         run: |
           sudo --preserve-env bash -e -c '
-            rm /mnt/gentoo/etc/portage/package.use/temporary
+            rm /mnt/gentoo/etc/portage/package.use/temporary /etc/portage/package.env/temporary
           '
 
       - name: Unmount Filesystems
