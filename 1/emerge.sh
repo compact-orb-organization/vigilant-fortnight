@@ -24,6 +24,8 @@ if [ "$2" = first ]; then
 
     emerge llvm-core/clang
 
+    rm /etc/portage/package.env/temporary
+
     emerge --oneshot dev-lang/perl
 fi
 

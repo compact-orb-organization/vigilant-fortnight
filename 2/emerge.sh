@@ -20,6 +20,8 @@ if [ "$2" = first ]; then
     echo "*/* gcc.conf" > /etc/portage/package.env/temporary
 
     emerge llvm-core/clang
+
+    rm /etc/portage/package.env/temporary
 fi
 
 # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
