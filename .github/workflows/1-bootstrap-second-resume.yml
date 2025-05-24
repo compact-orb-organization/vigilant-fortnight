@@ -1,4 +1,4 @@
-name: 1 Bootstrap Second Resume
+name: 1 Bootstrap First Resume
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --emptytree --keep-going --resume
+  EMERGE_PARAMETERS: --buildpkg=n --emptytree --resume
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ENDPOINT_CDN: ${{ secrets.STORAGE_ENDPOINT_CDN }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
@@ -49,11 +49,10 @@ jobs:
             rm --recursive /mnt/gentoo/tmp/*
           '
 
-      - name: Upload Binary Packages
+      - name: Remove Temporary Use Flags
         run: |
           sudo --preserve-env bash -e -c '
-            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs /$CONFIG_PREFIX
-            rm --recursive /mnt/gentoo/var/cache/binpkgs/*
+            rm /mnt/gentoo/etc/portage/package.use/temporary
           '
 
       - name: Unmount Filesystems
