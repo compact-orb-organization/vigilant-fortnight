@@ -6,7 +6,6 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 2
-  EMERGE_PARAMETERS: --buildpkg=n --emptytree @system llvm-core/clang
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ENDPOINT_CDN: ${{ secrets.STORAGE_ENDPOINT_CDN }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
@@ -60,15 +59,9 @@ jobs:
           sudo --preserve-env bash -e -c '
             cp ./$CONFIG_PREFIX/emerge.sh /mnt/gentoo/tmp
             cp ./env.sh /mnt/gentoo/tmp
-            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS" first
+            chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh first
             rm --recursive /mnt/gentoo/var/tmp/*
             rm --recursive /mnt/gentoo/tmp/*
-          '
-
-      - name: Remove Temporary Use Flags
-        run: |
-          sudo --preserve-env bash -e -c '
-            rm /mnt/gentoo/etc/portage/package.use/temporary
           '
 
       - name: Unmount Filesystems

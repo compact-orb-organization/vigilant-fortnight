@@ -8,7 +8,7 @@ source /tmp/env.sh
 # Sync the main Gentoo ebuild repository using emerge-webrsync.
 emerge-webrsync --revert=$PORTAGE_SNAPSHOT_DATE --quiet
 
-if [ "$2" = first ]; then
+if [ "$1" = first ]; then
     # Generate the specified locales.
     locale-gen --quiet
 
@@ -22,10 +22,10 @@ if [ "$2" = first ]; then
     emerge llvm-core/clang
 
     rm /etc/portage/package.env/temporary
+else
+    # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
+    timeout 19800 emerge $1
 fi
-
-# Emerge the packages passed as the first argument ($1) to the script, with a timeout.
-timeout 19800 emerge $1
 
 # Remove orphaned dependencies.
 emerge --depclean
