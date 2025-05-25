@@ -13,8 +13,7 @@ env:
 
 jobs:
   emerge:
-    timeout-minutes: 600
-    runs-on: warp-ubuntu-latest-x64-4x
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
