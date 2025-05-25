@@ -22,7 +22,7 @@ if [ "$1" = first ]; then
     emerge llvm-core/clang
 
     rm /etc/portage/package.env/temporary
-elif [ "$2" = long ]
+elif [ "$2" = long ]; then
     # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
     timeout 34200 emerge $1
 else
