@@ -27,6 +27,9 @@ if [ "$1" = first ]; then
     rm /etc/portage/package.env/temporary
 
     emerge --oneshot dev-lang/perl
+elif [ "$2" = long ]
+    # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
+    timeout 34200 emerge $1
 else
     # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
     timeout 19800 emerge $1
