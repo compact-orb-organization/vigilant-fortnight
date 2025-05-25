@@ -29,7 +29,7 @@ if [ "$1" = first ]; then
     emerge --oneshot dev-lang/perl
 else
     # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
-    timeout 172800 emerge $1
+    timeout 19800 emerge $1
 fi
 
 # Remove orphaned dependencies.

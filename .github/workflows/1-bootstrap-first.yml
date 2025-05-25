@@ -12,8 +12,7 @@ env:
 
 jobs:
   emerge:
-    timeout-minutes: 2880
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
