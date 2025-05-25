@@ -24,7 +24,7 @@ if [ "$1" = first ]; then
     rm /etc/portage/package.env/temporary
 else
     # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
-    timeout 19800 emerge $1
+    timeout 34200 emerge $1
 fi
 
 # Remove orphaned dependencies.
