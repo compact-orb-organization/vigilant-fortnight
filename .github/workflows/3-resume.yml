@@ -81,7 +81,7 @@ jobs:
           '
 
       - name: Unmount Filesystems
-        if: failure()
+        if: always()
         run: |
           sudo --preserve-env bash -e -c '
             umount --lazy /mnt/gentoo/{dev,proc,run,sys}
