@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 3
-  EMERGE_PARAMETERS: --oneshot dev-lang/python:3.13
+  EMERGE_PARAMETERS:
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ENDPOINT_CDN: ${{ secrets.STORAGE_ENDPOINT_CDN }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
@@ -24,6 +24,16 @@ jobs:
             mkdir /mnt/gentoo
             zstd --decompress --long=31 --stdout /mnt/$CONFIG_PREFIX.tar.zst | tar --directory=/mnt/gentoo --extract --file=- --numeric-owner --preserve-permissions --xattrs-include="*.*"
             rm /mnt/$CONFIG_PREFIX.tar.zst
+          '
+
+      - name: Setup Binary Package Cache
+        run: |
+          sudo --preserve-env bash -e -c '
+            mkdir /mnt/gentoo/var/cache/binpkgs-lowerdir
+            bash ./download-directory.sh /$CONFIG_PREFIX /mnt/gentoo/var/cache/binpkgs-lowerdir
+            mkdir /mnt/gentoo/var/cache/binpkgs-upperdir
+            mkdir /mnt/gentoo/var/cache/binpkgs-workdir
+            mount --types overlay overlay --options lowerdir=/mnt/gentoo/var/cache/binpkgs-lowerdir,upperdir=/mnt/gentoo/var/cache/binpkgs-upperdir,workdir=/mnt/gentoo/var/cache/binpkgs-workdir /mnt/gentoo/var/cache/binpkgs
           '
 
       - name: Mount Filesystems
@@ -49,10 +59,19 @@ jobs:
           '
 
       - name: Upload Binary Packages
+        if: success() || failure()
         run: |
           sudo --preserve-env bash -e -c '
-            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs /$CONFIG_PREFIX
+            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs-upperdir /$CONFIG_PREFIX
             rm --recursive /mnt/gentoo/var/cache/binpkgs/*
+          '
+
+      - name: Remove Binary Packages
+        if: success() || failure()
+        run: |
+          sudo --preserve-env bash -e -c '
+            umount --lazy /mnt/gentoo/var/cache/binpkgs
+            rm --recursive /mnt/gentoo/var/cache/binpkgs-lowerdir /mnt/gentoo/var/cache/binpkgs-upperdir /mnt/gentoo/var/cache/binpkgs-workdir
           '
 
       - name: Unmount Filesystems
