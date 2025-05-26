@@ -103,5 +103,5 @@ jobs:
         if: always()
         run: |
           sudo --preserve-env bash -e -c '
-            rm --recursive /mnt/*
+            rm --recursive --force /mnt/*
           '
