@@ -72,3 +72,10 @@ jobs:
             echo "Gentoo archive created"
             curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX.tar.zst --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
           '
+
+      - name: Cleanup
+        if: always()
+        run: |
+          sudo --preserve-env bash -e -c '
+            rm --recursive /mnt/*
+          '
