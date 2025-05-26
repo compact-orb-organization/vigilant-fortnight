@@ -1,1 +1,1 @@
-sys-libs/libunwind nolto.conf
+sys-libs/libunwind gcc.conf
