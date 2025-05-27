@@ -67,9 +67,9 @@ jobs:
           '
 
       - name: Remove Binary Packages
-        if: success() || failure()
+        if: always()
         run: |
-          sudo --preserve-env bash -e -c '
+          sudo --preserve-env bash -c '
             umount --lazy /mnt/gentoo/var/cache/binpkgs
             rm --recursive /mnt/gentoo/var/cache/binpkgs-lowerdir /mnt/gentoo/var/cache/binpkgs-upperdir /mnt/gentoo/var/cache/binpkgs-workdir
           '
