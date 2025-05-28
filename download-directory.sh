@@ -61,6 +61,8 @@ while [ $attempt -le 3 ]; do
     if [ "$?" -eq 0 ]; then
         break
     else
+        echo "[$attempt/3] Failed to fetch directory contents of $1"
+
         # If not the last attempt, wait before retrying.
         if [ $attempt -lt 3 ]; then
             sleep 2
@@ -73,6 +75,11 @@ list_files "$request" $1 | (
 
     # Process each file path for download.
     while IFS= read -r file; do
+        if [[ $file != /* ]]; then
+            echo $file
+            continue
+        fi
+
         # Limit parallel download jobs.
         if [ $job_count -ge 25 ]; then
                 wait -n # Wait for any single job to complete.
