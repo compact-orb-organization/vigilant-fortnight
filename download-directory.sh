@@ -81,7 +81,7 @@ list_files "$request" $1 | (
         fi
 
         # Limit parallel download jobs.
-        if [ $job_count -ge 25 ]; then
+        if [ $job_count -ge 10 ]; then
                 wait -n # Wait for any single job to complete.
 
                 job_count=$((job_count - 1))
@@ -89,13 +89,30 @@ list_files "$request" $1 | (
 
         # Download the file in the background.
         (
+            attempt=1
             # Extract the relative path of the file for local storage.
             path="${file%/*}"
 
-            # Download the file using aria2c, preserving directory structure.
-            # $2 is the local target directory.
-            # ${path#$1} removes the initial remote path prefix to create the correct local subdirectory.
-            aria2c --dir=$2${path#$1} --header="accesskey: $ACCESS_KEY" --header="accept: */*" --quiet https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$file
+            while [ $attempt -le 3 ]; do
+                # Download the file using aria2c, preserving directory structure.
+                # $2 is the local target directory.
+                # ${path#$1} removes the initial remote path prefix to create the correct local subdirectory.
+                aria2c --dir=$2${path#$1} --header="accesskey: $ACCESS_KEY" --header="accept: */*" --quiet https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME$file
+
+                if [ "$?" -eq 0 ]; then
+                    echo "Downloaded $file"
+
+                    break # Exit loop if download was successful.
+                else
+                    echo "[$attempt/3] Failed to download $file"
+
+                    # If not the last attempt, wait before retrying.
+                    if [ $attempt -lt 3 ]; then
+                        sleep 2
+                    fi
+                fi
+                attempt=$((attempt + 1)) # Increment attempt counter.
+            done
         ) &
 
         job_count=$((job_count + 1)) # Increment active job count.
