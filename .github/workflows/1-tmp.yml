@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --usepkg-exclude sys-kernel/gentoo-kernel-bin sys-kernel/gentoo-kernel-bin
+  EMERGE_PARAMETERS: --usepkg-exclude net-libs/gtk-vnc net-libs/gtk-vnc
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ENDPOINT_CDN: ${{ secrets.STORAGE_ENDPOINT_CDN }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
