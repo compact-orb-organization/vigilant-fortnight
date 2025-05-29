@@ -25,6 +25,12 @@ if [ "$1" = first ]; then
 elif [ "$2" = long ]; then
     # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
     timeout 34200 emerge $1
+elif [ "$2" = ccache ]; then
+    emerge dev-util/ccache
+
+    export FEATURES="ccache" CCACHE_DIR="/var/tmp/ccache" CCACHE_MAXSIZE="0"
+
+    timeout 19800 emerge $1
 else
     # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
     timeout 19800 emerge $1
