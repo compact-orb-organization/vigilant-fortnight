@@ -1,1 +1,1 @@
-dev-libs/openssl-compat gcc.conf
+#dev-libs/openssl-compat gcc.conf

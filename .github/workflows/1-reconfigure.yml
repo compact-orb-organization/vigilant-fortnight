@@ -43,6 +43,11 @@ jobs:
             cp --recursive ./$CONFIG_PREFIX/portage /mnt/gentoo/etc
             cp ./$CONFIG_PREFIX/make-emerge.conf /mnt/gentoo/etc/portage/make.conf
 
+            if [ -e /mnt/gentoo/etc/kernel/config.d ]; then
+              rm --recursive /mnt/gentoo/etc/kernel/config.d
+            fi
+            cp --recursive ./$CONFIG_PREFIX/kernel/config.d /mnt/gentoo/etc/kernel
+
             # Copy the host'\''s DNS configuration into the chroot
             cp  /etc/resolv.conf /mnt/gentoo/etc
           '
