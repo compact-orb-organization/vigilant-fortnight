@@ -6,7 +6,7 @@ on:
 env:
   ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
   CONFIG_PREFIX: 1
-  EMERGE_PARAMETERS: --usepkg-exclude "sys-kernel/gentoo-kernel-bin net-libs/gtk-vnc sys-apps/keyutils dev-libs/openssl-compat net-misc/remmina net-fs/samba sys-libs/talloc sys-libs/tdb sys-libs/tevent dev-libs/totem-pl-parser net-libs/webkit-gtk" sys-kernel/gentoo-kernel-bin net-libs/gtk-vnc sys-apps/keyutils dev-libs/openssl-compat net-misc/remmina net-fs/samba sys-libs/talloc sys-libs/tdb sys-libs/tevent dev-libs/totem-pl-parser net-libs/webkit-gtk
+  EMERGE_PARAMETERS: --usepkg-exclude 'sys-kernel/gentoo-kernel-bin net-libs/gtk-vnc sys-apps/keyutils dev-libs/openssl-compat net-misc/remmina net-fs/samba sys-libs/talloc sys-libs/tdb sys-libs/tevent dev-libs/totem-pl-parser net-libs/webkit-gtk' sys-kernel/gentoo-kernel-bin net-libs/gtk-vnc sys-apps/keyutils dev-libs/openssl-compat net-misc/remmina net-fs/samba sys-libs/talloc sys-libs/tdb sys-libs/tevent dev-libs/totem-pl-parser net-libs/webkit-gtk
   STORAGE_ENDPOINT: ${{ secrets.STORAGE_ENDPOINT }}
   STORAGE_ENDPOINT_CDN: ${{ secrets.STORAGE_ENDPOINT_CDN }}
   STORAGE_ZONE_NAME: ${{ secrets.STORAGE_ZONE_NAME }}
