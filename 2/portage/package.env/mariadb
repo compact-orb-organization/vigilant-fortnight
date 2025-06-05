@@ -1,1 +1,2 @@
-dev-db/mariadb gcc.conf
+# dev-db/mariadb gcc.conf
+dev-db/mariadb oneapi.conf
