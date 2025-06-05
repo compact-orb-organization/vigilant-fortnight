@@ -56,6 +56,7 @@ jobs:
             aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/intel-dpcpp-cpp-compiler-2025.1.1.9_offline.sh
             bash /mnt/intel-dpcpp-cpp-compiler-2025.1.1.9_offline.sh --silent -a --eula accept --ignore-errors --silent --install-dir /mnt/gentoo/opt
             rm /mnt/intel-dpcpp-cpp-compiler-2025.1.1.9_offline.sh
+            ls /mnt/gentoo/opt
             chroot /mnt/gentoo /usr/bin/bash /tmp/emerge.sh "$EMERGE_PARAMETERS" oneapi
             rm --recursive /mnt/gentoo/var/tmp/*
             rm --recursive /mnt/gentoo/tmp/*
