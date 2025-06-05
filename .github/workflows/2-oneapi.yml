@@ -58,13 +58,13 @@ jobs:
             rm --recursive /mnt/gentoo/tmp/*
           '
 
-      - name: Upload Binary Packages
-        if: success() || failure()
-        run: |
-          sudo --preserve-env bash -e -c '
-            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs-upperdir /$CONFIG_PREFIX
-            rm --recursive /mnt/gentoo/var/cache/binpkgs/*
-          '
+#      - name: Upload Binary Packages
+#        if: success() || failure()
+#        run: |
+#          sudo --preserve-env bash -e -c '
+#            bash ./upload-directory.sh /mnt/gentoo/var/cache/binpkgs-upperdir /$CONFIG_PREFIX
+#            rm --recursive /mnt/gentoo/var/cache/binpkgs/*
+#          '
 
       - name: Remove Binary Packages
         if: always()
@@ -81,17 +81,17 @@ jobs:
             umount --lazy /mnt/gentoo/{dev,proc,run,sys}
           '
 
-      - name : Upload Gentoo Archive
-        if: failure()
-        run: |
-          sudo --preserve-env bash -e -c '
-            # Create a tarball of the Gentoo environment
-            rm --recursive /mnt/gentoo/var/cache/distfiles/*
-            rm --recursive /mnt/gentoo/var/db/repos/gentoo
-            tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX-temporary.tar.zst --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
-            echo "Gentoo archive created"
-            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX-temporary.tar.zst --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
-          '
+#      - name : Upload Gentoo Archive
+#        if: failure()
+#        run: |
+#          sudo --preserve-env bash -e -c '
+#            # Create a tarball of the Gentoo environment
+#            rm --recursive /mnt/gentoo/var/cache/distfiles/*
+#            rm --recursive /mnt/gentoo/var/db/repos/gentoo
+#            tar --create --directory=/mnt/gentoo --file=/mnt/$CONFIG_PREFIX-temporary.tar.zst --numeric-owner --preserve-permissions --use-compress-program="zstd -9 -T8 --long=31" --xattrs-include="*.*" .
+#            echo "Gentoo archive created"
+#            curl --header "accept: application/json" --header "accesskey: $ACCESS_KEY" --header "content-type: application/octet-stream" --silent --upload-file /mnt/$CONFIG_PREFIX-temporary.tar.zst --url https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/
+#          '
 
       - name: Cleanup
         if: always()
