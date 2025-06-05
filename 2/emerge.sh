@@ -25,6 +25,12 @@ if [ "$1" = first ]; then
 elif [ "$2" = long ]; then
     # Emerge the packages passed as the first argument ($1) to the script, with a timeout.
     timeout 34200 emerge $1
+elif [ "$2" = oneapi ]; then
+    aria2c --dir=/mnt --header="AccessKey: $ACCESS_KEY" --header="accept: */*" https://$STORAGE_ENDPOINT/$STORAGE_ZONE_NAME/intel-dpcpp-cpp-compiler-2025.1.1.9_offline.sh
+    bash /mnt/intel-dpcpp-cpp-compiler-2025.1.1.9_offline.sh -a --eula accept --silent
+    rm /mnt/intel-dpcpp-cpp-compiler-2025.1.1.9_offline.sh
+
+    timeout 19800 emerge $1
 elif [ "$2" = ccache ]; then
     emerge dev-util/ccache
 
