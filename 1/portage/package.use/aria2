@@ -1,1 +1,1 @@
-net-misc/aria2 -jemalloc tcmalloc
+net-misc/aria2 -jemalloc
